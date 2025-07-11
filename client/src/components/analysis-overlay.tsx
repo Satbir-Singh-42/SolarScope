@@ -154,8 +154,7 @@ export default function AnalysisOverlay({
   return (
     <div 
       ref={containerRef}
-      className="relative bg-gray-100 rounded-lg overflow-hidden w-full"
-      style={{ aspectRatio: '16/9', minHeight: '200px' }}
+      className="relative bg-gray-100 rounded-lg overflow-hidden w-full h-48 sm:h-56 md:h-64"
     >
       <canvas
         ref={canvasRef}
