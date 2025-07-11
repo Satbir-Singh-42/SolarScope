@@ -9,7 +9,7 @@ import ImageUpload from "./image-upload";
 import AnalysisOverlay from "./analysis-overlay";
 import { apiRequest, checkBackendHealth } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { generateFaultDetectionPDF } from "@/lib/pdf-generator";
+
 import type { FaultResult } from "@shared/schema";
 
 export default function FaultDetection() {
@@ -898,31 +898,12 @@ ${result.recommendations.map(rec => `- ${rec}`).join('\n')}
                     <Button 
                       variant="outline" 
                       className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 hover:shadow-lg hover:bg-white text-sm h-11 shadow-md text-black hover:text-black" 
-                      onClick={async () => {
-                        if (analysisResults.length === 0 || imageUrls.length === 0) return;
-                        
-                        try {
-                          // Use the first result and image for PDF generation
-                          await generateFaultDetectionPDF(analysisResults[0], imageUrls[0], analysisCanvasRef);
-                          toast({
-                            title: "PDF Generated",
-                            description: "Professional fault detection report has been downloaded.",
-                            variant: "success",
-                          });
-                        } catch (error) {
-                          console.error('PDF generation error:', error);
-                          toast({
-                            title: "PDF Generation Failed",
-                            description: "Could not generate PDF report. Please try again.",
-                            variant: "destructive",
-                          });
-                        }
-                      }}
+                      onClick={exportToJson}
                     >
                       <FileDown className="mr-1 sm:mr-2" size={14} />
                       <div className="text-left">
-                        <div className="font-medium">PDF Report</div>
-                        <div className="text-xs opacity-70">Professional analysis</div>
+                        <div className="font-medium">JSON Data</div>
+                        <div className="text-xs opacity-70">Raw data export</div>
                       </div>
                     </Button>
 
