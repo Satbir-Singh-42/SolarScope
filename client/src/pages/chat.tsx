@@ -168,12 +168,15 @@ export default function Chat() {
           if (data.status === 'healthy') {
             setApiStatus('connected');
           } else {
-            setApiStatus('error');
+            // Server responds but unhealthy - still connected
+            setApiStatus('connected');
           }
         } else {
-          setApiStatus('error');
+          // Server error response - still connected to server
+          setApiStatus('connected');
         }
       } catch (error) {
+        // Network failure - truly offline
         setApiStatus('error');
       }
     };
@@ -239,13 +242,8 @@ export default function Chat() {
       return response.json();
     },
     onSuccess: (response) => {
-      // Update API status based on response content
-      if (response.response && !response.response.includes("I'm here to help with your solar")) {
-        setApiStatus('connected');
-      } else if (response.response && response.response.includes("I'm here to help with your solar")) {
-        // This indicates fallback response, meaning API might be down
-        setApiStatus('error');
-      }
+      // Update API status - if we get any response, API is connected
+      setApiStatus('connected');
       
       const newMessageId = Date.now() + 1;
       setMessages(prev => [...prev, {
@@ -259,7 +257,13 @@ export default function Chat() {
       setTypingMessageId(newMessageId);
     },
     onError: (error: any) => {
-      setApiStatus('error');
+      // Only set to error if it's a definite API connection failure
+      if (error.message && (error.message.includes('Failed to fetch') || error.message.includes('Network error'))) {
+        setApiStatus('error');
+      } else {
+        // For other errors (like quota), keep as connected since API responds
+        setApiStatus('connected');
+      }
       console.error('AI Chat error:', error);
       
       // Create a more helpful error message based on the error type
@@ -767,9 +771,9 @@ export default function Chat() {
                           : 'bg-yellow-500 animate-bounce'
                       }`}></div>
                       <span className="text-xs font-medium">
-                        {apiStatus === 'connected' ? 'API Connected' : 
-                         apiStatus === 'error' ? 'API Offline' : 
-                         'Checking API...'}
+                        {apiStatus === 'connected' ? 'Online' : 
+                         apiStatus === 'error' ? 'Offline' : 
+                         'Online'}
                       </span>
                     </Badge>
                     {/* New Conversation Button - Only show if there are user messages */}

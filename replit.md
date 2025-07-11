@@ -295,6 +295,7 @@ Changelog:
 - July 11, 2025. **UI TEXT FIXES**: Fixed Summary and JSON Data button text colors to remain black for better readability
 - July 11, 2025. **HOVER STATE FIXES**: Added hover:text-black to prevent text from turning white on button hover
 - July 11, 2025. **API STATUS INDICATOR**: Added persistent API connection status badge that shows connected/offline/checking states with color-coded indicators and never hides after first message
+- July 11, 2025. **STATUS TEXT SIMPLIFIED**: Changed API status to show only "Online" and "Offline" with conservative offline detection only for true network failures
 - July 11, 2025. **FAULT DETECTION ENHANCED**: Simplified immediate action recommendations to be more user-friendly and actionable for self-inspection
 - July 11, 2025. **AI RECOMMENDATIONS PERSONALIZED**: Modified AI service to generate specific recommendations based on the exact fault detected rather than generic recommendations
 - July 11, 2025. **RISK-BASED MAINTENANCE SYSTEM**: Enhanced AI to prioritize recommendations by severity level with immediate safety actions for Critical faults, urgent repairs for High severity, planned maintenance for Medium, and routine care for Low severity issues
