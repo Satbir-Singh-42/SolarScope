@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, forwardRef } from "react";
 
 interface Region {
   x: number;
@@ -22,12 +22,12 @@ interface AnalysisOverlayProps {
   type: 'installation' | 'fault-detection';
 }
 
-export default function AnalysisOverlay({
+const AnalysisOverlay = forwardRef<HTMLCanvasElement, AnalysisOverlayProps>(({
   imageUrl,
   regions = [],
   faults = [],
   type
-}: AnalysisOverlayProps) {
+}, ref) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -157,9 +157,22 @@ export default function AnalysisOverlay({
       className="relative bg-gray-100 rounded-lg overflow-hidden w-full h-48 sm:h-56 md:h-64"
     >
       <canvas
-        ref={canvasRef}
+        ref={(node) => {
+          if (ref) {
+            if (typeof ref === 'function') {
+              ref(node);
+            } else {
+              ref.current = node;
+            }
+          }
+          (canvasRef as any).current = node;
+        }}
         className="absolute inset-0 w-full h-full object-contain"
       />
     </div>
   );
-}
+});
+
+AnalysisOverlay.displayName = 'AnalysisOverlay';
+
+export default AnalysisOverlay;
