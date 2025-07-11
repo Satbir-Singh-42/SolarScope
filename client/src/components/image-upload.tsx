@@ -201,13 +201,23 @@ export default function ImageUpload({
             {onAnalyze && (
               <Button 
                 onClick={() => onAnalyze(uploadedFile)}
-                disabled={uploading}
-                className="w-full bg-primary hover:bg-blue-700 text-white h-11 sm:h-12 text-sm sm:text-base"
+                disabled={uploading || isValidating || !validationResult?.isValid}
+                className="w-full bg-primary hover:bg-blue-700 text-white h-11 sm:h-12 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {uploading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                     Analyzing...
+                  </>
+                ) : isValidating ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Validating...
+                  </>
+                ) : !validationResult?.isValid ? (
+                  <>
+                    <X className="mr-2" size={16} />
+                    Image Validation Required
                   </>
                 ) : (
                   <>
