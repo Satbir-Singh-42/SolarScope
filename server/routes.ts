@@ -422,11 +422,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Generating solar news...');
       
       // Return comprehensive solar industry data immediately
-      let newsData;
-      
-      // Return comprehensive solar industry data
       console.log('Serving comprehensive solar industry data...');
-      newsData = {
+      const newsData = {
           articles: [
             {
               id: "solar-tech-2025-001",
