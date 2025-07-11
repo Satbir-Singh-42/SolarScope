@@ -886,7 +886,7 @@ export async function analyzeFaultsWithAI(imagePath: string, originalFilename?: 
           }
         ],
         "overallHealth": string ("Excellent", "Good", "Fair", "Poor", "Critical"),
-        "recommendations": [string] (professional maintenance recommendations with timeline)
+        "recommendations": [string] (3-4 specific recommendations based on the exact fault found, written in simple language for homeowners)
       }
 
       FORMATTING REQUIREMENTS:
@@ -895,6 +895,14 @@ export async function analyzeFaultsWithAI(imagePath: string, originalFilename?: 
       - Use clear, professional language without decorative elements
       - Recommendations should be actionable and specific
       - Format as proper sentences with clear punctuation
+      
+      RECOMMENDATION GUIDELINES:
+      - Generate 3-4 specific recommendations based on the EXACT fault you detected
+      - Write in simple language that homeowners can understand
+      - For Critical faults (like extensive cracking): Focus on safety and immediate action
+      - For High faults: Focus on preventing further damage
+      - For Medium/Low faults: Focus on maintenance and monitoring
+      - Always include what the user can check themselves before calling professionals
 
       ANALYSIS REQUIREMENTS:
       1. Systematic visual inspection of all visible components
@@ -973,8 +981,7 @@ export async function analyzeFaultsWithAI(imagePath: string, originalFilename?: 
       
       return {
         ...result,
-        panelId,
-        recommendations: generateRecommendations(result.faults)
+        panelId
       };
     } catch (error: any) {
       console.error(`AI fault analysis attempt ${attempt} failed:`, error);
