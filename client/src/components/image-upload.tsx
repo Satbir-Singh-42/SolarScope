@@ -3,6 +3,8 @@ import { useDropzone } from "react-dropzone";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CloudUpload, X, Zap } from "lucide-react";
+import ValidationCard from "./validation-card";
+import { validateImageForInstallation, validateImageForFaultDetection, ValidationResult } from "@/lib/image-validation";
 
 interface ImageUploadProps {
   onUpload: (file: File) => void;
@@ -12,6 +14,7 @@ interface ImageUploadProps {
   maxSize?: number;
   title: string;
   description: string;
+  validationType: "installation" | "fault-detection";
 }
 
 export default function ImageUpload({
@@ -21,19 +24,50 @@ export default function ImageUpload({
   accept = "image/*",
   maxSize = 50 * 1024 * 1024, // 50MB
   title,
-  description
+  description,
+  validationType
 }: ImageUploadProps) {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
+  const [isValidating, setIsValidating] = useState(false);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
-      setUploadedFile(file);
-      setPreview(URL.createObjectURL(file));
-      onUpload(file);
+      setIsValidating(true);
+      setValidationResult({
+        isValid: false,
+        type: "validating",
+        title: "Validating Image",
+        description: "Please wait while we validate your image..."
+      });
+
+      try {
+        const result = validationType === "installation" 
+          ? await validateImageForInstallation(file)
+          : await validateImageForFaultDetection(file);
+
+        setValidationResult(result);
+        
+        if (result.isValid) {
+          setUploadedFile(file);
+          setPreview(URL.createObjectURL(file));
+          onUpload(file);
+        }
+      } catch (error) {
+        console.error('Validation error:', error);
+        setValidationResult({
+          isValid: false,
+          type: "error",
+          title: "Validation Failed",
+          description: "Unable to validate the image. Please try again."
+        });
+      } finally {
+        setIsValidating(false);
+      }
     }
-  }, [onUpload]);
+  }, [onUpload, validationType]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -45,6 +79,7 @@ export default function ImageUpload({
 
   const removeFile = () => {
     setUploadedFile(null);
+    setValidationResult(null);
     if (preview) {
       URL.revokeObjectURL(preview);
       setPreview(null);
@@ -55,6 +90,18 @@ export default function ImageUpload({
     <Card className="shadow-material">
       <CardContent className="p-4 sm:p-6 md:p-8">
         <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 text-primary-custom">{title}</h3>
+        
+        {/* Validation Card */}
+        {validationResult && (
+          <div className="mb-4 sm:mb-6">
+            <ValidationCard
+              type={validationResult.type}
+              title={validationResult.title}
+              description={validationResult.description}
+              className="animate-in slide-in-from-top-2 duration-300"
+            />
+          </div>
+        )}
         
         {!uploadedFile ? (
           <div

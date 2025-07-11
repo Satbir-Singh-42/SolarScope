@@ -155,6 +155,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
       version: "1.0.0"
     });
   });
+
+  // Image validation endpoint
+  app.post("/api/validate-image", upload.single('image'), async (req: MulterRequest, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No image file provided" });
+      }
+
+      const { type } = req.body;
+      const tempFilePath = saveBufferToTemp(req.file.buffer, req.file.originalname || 'image.jpg');
+
+      try {
+        // Import the classifyImage function
+        const { classifyImage } = await import("./ai-service");
+        
+        // Use the AI classification function to validate the image
+        const isValid = await classifyImage(tempFilePath, type === 'installation' ? 'rooftop' : 'solar-panel');
+        
+        res.json({
+          isValid: isValid,
+          message: isValid ? "Image validated successfully" : "Invalid image for the selected analysis type"
+        });
+      } catch (error) {
+        console.error('Image validation error:', error);
+        res.status(400).json({ 
+          error: error instanceof Error ? error.message : "Image validation failed" 
+        });
+      } finally {
+        // Clean up temp file
+        try {
+          fs.unlinkSync(tempFilePath);
+        } catch (e) {
+          console.error('Error cleaning up temp file:', e);
+        }
+      }
+    } catch (error) {
+      console.error('Image validation error:', error);
+      res.status(500).json({ error: "Internal server error during image validation" });
+    }
+  });
+
   // AI analysis endpoints
   app.post("/api/ai/analyze-installation", async (req, res) => {
     try {
