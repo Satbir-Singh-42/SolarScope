@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar, Clock, TrendingUp, Zap, Leaf, DollarSign, Search, Filter, ChevronRight, ExternalLink, Newspaper, RefreshCw } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Calendar, Clock, TrendingUp, Zap, Leaf, DollarSign, Search, Filter, ChevronRight, ExternalLink, Newspaper, RefreshCw, Menu, Home, MessageCircle, HelpCircle } from "lucide-react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 
@@ -245,243 +246,173 @@ export default function Articles() {
               </Button>
             </nav>
             <div className="md:hidden">
-              <Button onClick={handleRefresh} variant="outline" size="sm" disabled={isRefreshing}>
-                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-              </Button>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="outline" size="icon" className="bg-white hover:bg-blue-50 text-black hover:text-blue-600 border-gray-300 hover:border-blue-400">
+                    <Menu className="h-5 w-5" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                  <SheetDescription className="sr-only">Main navigation menu</SheetDescription>
+                  <nav className="flex flex-col space-y-6 mt-8">
+                    <div className="flex flex-col space-y-4">
+                      <h3 className="font-semibold text-lg text-primary">Navigation</h3>
+                      <Link href="/">
+                        <Button variant="outline" className="w-full justify-start space-x-3">
+                          <Home size={20} />
+                          <span>Dashboard</span>
+                        </Button>
+                      </Link>
+                      <Link href="/chat">
+                        <Button variant="outline" className="w-full justify-start space-x-3">
+                          <MessageCircle size={20} />
+                          <span>AI Assistant</span>
+                        </Button>
+                      </Link>
+                      <Button variant="default" className="w-full justify-start space-x-3">
+                        <Newspaper size={20} />
+                        <span>Articles</span>
+                      </Button>
+                      <Link href="/about">
+                        <Button variant="outline" className="w-full justify-start space-x-3">
+                          <HelpCircle size={20} />
+                          <span>About</span>
+                        </Button>
+                      </Link>
+                    </div>
+                    <div className="pt-4 border-t">
+                      <Button onClick={handleRefresh} variant="outline" className="w-full" disabled={isRefreshing}>
+                        <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+                        Refresh Articles
+                      </Button>
+                    </div>
+                  </nav>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Search and Filter */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-8"
-        >
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input
-                placeholder="Search articles, topics, or technologies..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-500" />
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All Categories</option>
-                {newsData.categories.map(category => (
-                  <option key={category} value={category}>
-                    {category.charAt(0).toUpperCase() + category.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </div>
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        {/* Search Bar */}
+        <div className="mb-6">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Input
+              placeholder="Search articles..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-12 py-3 text-base bg-white border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
           </div>
-        </motion.div>
+        </div>
 
-        <Tabs defaultValue="latest" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="latest">Latest News</TabsTrigger>
-            <TabsTrigger value="trending">Trending</TabsTrigger>
-            <TabsTrigger value="categories">Categories</TabsTrigger>
-          </TabsList>
+        {/* Category Filter */}
+        <div className="mb-6">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={selectedCategory === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSelectedCategory('all')}
+              className="rounded-full"
+            >
+              All
+            </Button>
+            {newsData.categories.map(category => (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedCategory(category)}
+                className="rounded-full capitalize"
+              >
+                {category}
+              </Button>
+            ))}
+          </div>
+        </div>
 
-          <TabsContent value="latest" className="space-y-6">
-            {/* Featured Article */}
-            {filteredArticles.length > 0 && (
+        {/* Articles List */}
+        <div className="space-y-4">
+          {filteredArticles.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500">No articles found matching your search.</p>
+            </div>
+          ) : (
+            filteredArticles.map((article, index) => (
               <motion.div
+                key={article.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
               >
-                <Card className="overflow-hidden border-l-4 border-l-blue-600">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-                            {getCategoryIcon(filteredArticles[0].category)}
-                            <span className="ml-1">Featured</span>
+                <Card 
+                  className="hover:shadow-lg transition-all duration-200 cursor-pointer border border-gray-200 bg-white"
+                  onClick={() => handleReadMore(article)}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-start space-x-4">
+                      {/* Category Icon */}
+                      <div className="flex-shrink-0">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                          article.category === 'technology' ? 'bg-blue-100 text-blue-600' :
+                          article.category === 'market' ? 'bg-green-100 text-green-600' :
+                          article.category === 'environment' ? 'bg-emerald-100 text-emerald-600' :
+                          'bg-purple-100 text-purple-600'
+                        }`}>
+                          {getCategoryIcon(article.category)}
+                        </div>
+                      </div>
+                      
+                      {/* Article Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700 capitalize">
+                            {article.category}
                           </Badge>
-                          <span className="text-sm text-gray-500">
-                            {formatDate(filteredArticles[0].publishedAt)}
-                          </span>
+                          {article.trending && (
+                            <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-700">
+                              <TrendingUp className="w-3 h-3 mr-1" />
+                              Trending
+                            </Badge>
+                          )}
                         </div>
-                        <CardTitle className="text-2xl leading-tight">
-                          {filteredArticles[0].title}
-                        </CardTitle>
-                        <CardDescription className="text-base">
-                          {filteredArticles[0].summary}
-                        </CardDescription>
+                        
+                        <h3 className="font-semibold text-gray-900 text-lg mb-2 line-clamp-2 leading-tight">
+                          {article.title}
+                        </h3>
+                        
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed">
+                          {article.summary}
+                        </p>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4 text-xs text-gray-500">
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {article.readTime} min read
+                            </div>
+                            <span>{formatDate(article.publishedAt)}</span>
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {article.source}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          {filteredArticles[0].readTime} min read
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <span>Source: {filteredArticles[0].source}</span>
-                        </div>
+                      
+                      {/* Arrow Icon */}
+                      <div className="flex-shrink-0">
+                        <ChevronRight className="w-5 h-5 text-gray-400" />
                       </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleReadMore(filteredArticles[0])}
-                      >
-                        Read More <ChevronRight className="w-4 h-4 ml-1" />
-                      </Button>
                     </div>
                   </CardContent>
                 </Card>
               </motion.div>
-            )}
-
-            {/* Articles Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredArticles.slice(1).map((article, index) => (
-                <motion.div
-                  key={article.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
-                >
-                  <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleReadMore(article)}>
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <Badge variant="outline" className="text-xs">
-                          {getCategoryIcon(article.category)}
-                          <span className="ml-1">{article.category}</span>
-                        </Badge>
-                        {article.trending && (
-                          <Badge variant="secondary" className="bg-orange-100 text-orange-700">
-                            <TrendingUp className="w-3 h-3 mr-1" />
-                            Trending
-                          </Badge>
-                        )}
-                      </div>
-                      <CardTitle className="text-lg leading-tight line-clamp-2">
-                        {article.title}
-                      </CardTitle>
-                      <CardDescription className="line-clamp-3">
-                        {article.summary}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <Separator className="mb-4" />
-                      <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          {article.readTime} min
-                        </div>
-                        <span>{formatDate(article.publishedAt)}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Source: {article.source}</span>
-                      </div>
-                      <div className="flex flex-wrap gap-1 mt-3">
-                        {article.tags.slice(0, 3).map(tag => (
-                          <Badge key={tag} variant="outline" className="text-xs">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="trending" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {newsData.trending.map((article, index) => (
-                <motion.div
-                  key={article.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleReadMore(article)}>
-                    <CardHeader>
-                      <div className="flex items-center justify-between mb-2">
-                        <Badge className="bg-orange-100 text-orange-700">
-                          <TrendingUp className="w-3 h-3 mr-1" />
-                          #{index + 1} Trending
-                        </Badge>
-                        <span className="text-sm text-gray-500">
-                          {formatDate(article.publishedAt)}
-                        </span>
-                      </div>
-                      <CardTitle className="text-xl">{article.title}</CardTitle>
-                      <CardDescription>{article.summary}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-4 h-4" />
-                            {article.readTime} min read
-                          </div>
-                          <span>Source: {article.source}</span>
-                        </div>
-                        <Button variant="outline" size="sm" onClick={(e) => {
-                          e.stopPropagation();
-                          handleReadMore(article);
-                        }}>
-                          <ExternalLink className="w-4 h-4 mr-1" />
-                          Read More
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="categories" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {newsData.categories.map((category) => {
-                const categoryArticles = newsData.articles.filter(article => article.category === category);
-                return (
-                  <motion.div
-                    key={category}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setSelectedCategory(category)}>
-                      <CardHeader className="text-center">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-green-500 rounded-lg flex items-center justify-center mx-auto mb-3">
-                          {getCategoryIcon(category)}
-                          <span className="ml-1 text-white">{getCategoryIcon(category)}</span>
-                        </div>
-                        <CardTitle className="text-lg capitalize">{category}</CardTitle>
-                        <CardDescription>
-                          {categoryArticles.length} articles
-                        </CardDescription>
-                      </CardHeader>
-                    </Card>
-                  </motion.div>
-                );
-              })}
-            </div>
-          </TabsContent>
-        </Tabs>
+            ))
+          )}
+        </div>
       </div>
 
       {/* Article Reading Modal */}
