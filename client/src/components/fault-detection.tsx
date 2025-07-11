@@ -706,10 +706,9 @@ ${result.recommendations.map(rec => `- ${rec}`).join('\n')}
                           <h5 className="font-semibold text-red-800 text-sm">Immediate Actions Required</h5>
                         </div>
                         <ul className="space-y-1 text-xs sm:text-sm text-red-700">
-                          <li>• Emergency shutdown of critically damaged panels within 24 hours</li>
-                          <li>• Contact certified solar technician immediately</li>
-                          <li>• Document all damage with photos and timestamps</li>
-                          <li>• Check insurance coverage for potential claims</li>
+                          <li>• Check panels yourself for visible damage</li>
+                          <li>• Turn off system if major cracks found</li>
+                          <li>• Call solar technician within 24 hours</li>
                         </ul>
                       </div>
                     )}
