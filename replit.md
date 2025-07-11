@@ -309,7 +309,10 @@ Changelog:
 - July 11, 2025. **REPLIT MIGRATION COMPLETED**: Successfully completed final migration from Replit Agent to Replit environment with all dependencies resolved, workflow operational, and project ready for development
 - July 11, 2025. **PDF GENERATION IMPLEMENTED**: Replaced JSON export buttons with professional PDF generation using jsPDF and html2canvas libraries for comprehensive reports with images and technical details
 - July 11, 2025. **ARTICLES PAGE ENHANCED**: Connected articles page with comprehensive solar industry news featuring real data including perovskite technology, AI optimization, cost reductions, and market trends. Added full modal functionality for reading complete articles with proper navigation integration.
-- July 11, 2025. **ARTICLES PAGE ENHANCED**: Connected articles page with comprehensive solar industry news featuring real data including perovskite technology, AI optimization, cost reductions, and market trends. Added full modal functionality for reading complete articles with proper navigation integration and fallback to authentic solar industry data when AI is unavailable.
+- July 11, 2025. **ARTICLES PAGE REDESIGNED**: Completely redesigned with mobile-app inspired clean card layout, larger category icons with gradient backgrounds, removed refresh button in favor of auto-refresh (3 minutes) and pull-to-refresh for mobile
+- July 11, 2025. **NAVIGATION UNIFIED**: Updated articles page navigation to match About page structure with proper Installation Planning, Fault Detection, AI Assistant, Articles, and About links
+- July 11, 2025. **MOBILE REFRESH IMPLEMENTED**: Added pull-to-refresh functionality for mobile with visual feedback indicator and auto-refresh every 3 minutes for real-time updates
+- July 11, 2025. **ARTICLES UI ENHANCED**: Improved article cards with larger 64px category icons, gradient backgrounds, and better spacing for mobile-first design inspired by modern app interfaces
 ```
 
 ## User Preferences

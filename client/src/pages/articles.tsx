@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Calendar, Clock, TrendingUp, Zap, Leaf, DollarSign, Search, Filter, ChevronRight, ExternalLink, Newspaper, RefreshCw, Menu, Home, MessageCircle, HelpCircle } from "lucide-react";
+import { Calendar, Clock, TrendingUp, Zap, Leaf, DollarSign, Search, Filter, ChevronRight, ExternalLink, Newspaper, RefreshCw, Menu, Home, MessageCircle, HelpCircle, CloudSun } from "lucide-react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 
@@ -138,6 +138,8 @@ export default function Articles() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newsData, setNewsData] = useState(solarNewsData);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastRefreshTime, setLastRefreshTime] = useState(Date.now());
+  const [pullRefreshState, setPullRefreshState] = useState({ isPulling: false, pullDistance: 0 });
 
   useEffect(() => {
     let filtered = newsData.articles;
@@ -162,6 +164,61 @@ export default function Articles() {
     const trending = newsData.articles.filter(article => article.trending).slice(0, 3);
     setNewsData(prev => ({ ...prev, trending }));
   }, []);
+
+  // Auto-refresh every 3 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      handleRefresh();
+    }, 180000); // 3 minutes
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Pull-to-refresh for mobile
+  useEffect(() => {
+    let startY = 0;
+    let isScrolling = false;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (window.scrollY === 0) {
+        startY = e.touches[0].clientY;
+        isScrolling = false;
+        setPullRefreshState({ isPulling: false, pullDistance: 0 });
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isScrolling && window.scrollY === 0) {
+        const currentY = e.touches[0].clientY;
+        const diffY = currentY - startY;
+        
+        if (diffY > 0) {
+          setPullRefreshState({ isPulling: true, pullDistance: Math.min(diffY, 120) });
+          
+          if (diffY > 80) { // Pull down 80px to trigger refresh
+            e.preventDefault();
+          }
+        }
+      }
+    };
+
+    const handleTouchEnd = () => {
+      if (pullRefreshState.isPulling && pullRefreshState.pullDistance > 80) {
+        handleRefresh();
+      }
+      setPullRefreshState({ isPulling: false, pullDistance: 0 });
+    };
+
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [pullRefreshState]);
 
   const getCategoryIcon = (category: string) => {
     switch (category.toLowerCase()) {
@@ -217,33 +274,50 @@ export default function Articles() {
 
   return (
     <div className="min-h-screen bg-surface pt-16">
+      {/* Pull-to-refresh indicator */}
+      {pullRefreshState.isPulling && (
+        <div 
+          className="fixed top-16 left-1/2 transform -translate-x-1/2 z-40 bg-white rounded-full p-2 shadow-lg transition-all duration-200"
+          style={{ transform: `translateX(-50%) translateY(${pullRefreshState.pullDistance - 40}px)` }}
+        >
+          <RefreshCw className={`w-6 h-6 text-primary ${pullRefreshState.pullDistance > 80 ? 'animate-spin' : ''}`} />
+        </div>
+      )}
+      
       {/* Navigation Header */}
       <header className="bg-white shadow-material fixed top-0 left-0 right-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-lg flex items-center justify-center">
-                <Newspaper className="text-white" size={20} />
+                <CloudSun className="text-white" size={20} />
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-primary">Articles</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-primary">SolarScope AI</h1>
             </div>
             <nav className="hidden md:flex items-center space-x-8">
-              <Link href="/">
-                <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">Dashboard</button>
+              <Link href="/?tab=installation">
+                <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">
+                  Installation Planning
+                </button>
+              </Link>
+              <Link href="/?tab=fault-detection">
+                <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">
+                  Fault Detection
+                </button>
               </Link>
               <Link href="/chat">
-                <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">AI Assistant</button>
+                <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">
+                  AI Assistant
+                </button>
               </Link>
-              <Link href="/articles">
-                <button className="text-primary font-medium transition-all duration-300 ease-in-out transform hover:scale-105">Articles</button>
-              </Link>
+              <button className="text-primary font-medium transition-all duration-300 ease-in-out transform hover:scale-105">
+                Articles
+              </button>
               <Link href="/about">
-                <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">About</button>
+                <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">
+                  About
+                </button>
               </Link>
-              <Button onClick={handleRefresh} variant="outline" size="sm" disabled={isRefreshing}>
-                <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-                Refresh
-              </Button>
             </nav>
             <div className="md:hidden">
               <Sheet>
@@ -258,10 +332,16 @@ export default function Articles() {
                   <nav className="flex flex-col space-y-6 mt-8">
                     <div className="flex flex-col space-y-4">
                       <h3 className="font-semibold text-lg text-primary">Navigation</h3>
-                      <Link href="/">
+                      <Link href="/?tab=installation">
                         <Button variant="outline" className="w-full justify-start space-x-3">
                           <Home size={20} />
-                          <span>Dashboard</span>
+                          <span>Installation Planning</span>
+                        </Button>
+                      </Link>
+                      <Link href="/?tab=fault-detection">
+                        <Button variant="outline" className="w-full justify-start space-x-3">
+                          <Search size={20} />
+                          <span>Fault Detection</span>
                         </Button>
                       </Link>
                       <Link href="/chat">
@@ -280,12 +360,6 @@ export default function Articles() {
                           <span>About</span>
                         </Button>
                       </Link>
-                    </div>
-                    <div className="pt-4 border-t">
-                      <Button onClick={handleRefresh} variant="outline" className="w-full" disabled={isRefreshing}>
-                        <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-                        Refresh Articles
-                      </Button>
                     </div>
                   </nav>
                 </SheetContent>
@@ -354,15 +428,26 @@ export default function Articles() {
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start space-x-4">
-                      {/* Category Icon */}
+                      {/* Category Icon with Photo */}
                       <div className="flex-shrink-0">
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          article.category === 'technology' ? 'bg-blue-100 text-blue-600' :
-                          article.category === 'market' ? 'bg-green-100 text-green-600' :
-                          article.category === 'environment' ? 'bg-emerald-100 text-emerald-600' :
-                          'bg-purple-100 text-purple-600'
-                        }`}>
-                          {getCategoryIcon(article.category)}
+                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                          {article.category === 'technology' ? (
+                            <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                              <Zap className="w-8 h-8 text-white" />
+                            </div>
+                          ) : article.category === 'market' ? (
+                            <div className="w-full h-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                              <DollarSign className="w-8 h-8 text-white" />
+                            </div>
+                          ) : article.category === 'environment' ? (
+                            <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
+                              <Leaf className="w-8 h-8 text-white" />
+                            </div>
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
+                              <Calendar className="w-8 h-8 text-white" />
+                            </div>
+                          )}
                         </div>
                       </div>
                       
