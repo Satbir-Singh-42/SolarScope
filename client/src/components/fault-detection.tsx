@@ -683,43 +683,229 @@ ${result.recommendations.map(rec => `- ${rec}`).join('\n')}
                   </div>
                 </div>
 
-                {/* Maintenance Recommendations */}
-                <div className="bg-gray-50 rounded-lg p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4 lg:mb-6">
-                  <h4 className="text-sm sm:text-base lg:text-lg font-medium mb-2 sm:mb-3 lg:mb-4 text-primary-custom">Maintenance Recommendations</h4>
-                  <div className="space-y-2 sm:space-y-3 lg:space-y-4">
-                    {analysisResults.flatMap(result => result.recommendations).map((recommendation, index) => (
-                      <div key={index} className="flex items-start space-x-2 sm:space-x-3">
-                        <div className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 bg-primary rounded-full flex items-center justify-center mt-0.5 sm:mt-1 flex-shrink-0">
-                          <span className="text-white text-xs font-bold">{index + 1}</span>
+                {/* Enhanced Maintenance Recommendations */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 sm:p-4 lg:p-6 mb-3 sm:mb-4 lg:mb-6 border border-blue-200">
+                  <div className="flex items-center space-x-2 mb-3 sm:mb-4">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+                    <h4 className="text-sm sm:text-base lg:text-lg font-semibold text-blue-900">Professional Maintenance Plan</h4>
+                  </div>
+                  
+                  {/* Categorized Recommendations */}
+                  <div className="space-y-4">
+                    {/* Immediate Actions */}
+                    {analysisResults.some(r => r.faults.some(f => f.severity === 'Critical')) && (
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">!</span>
+                          </div>
+                          <h5 className="font-semibold text-red-800 text-sm">Immediate Actions Required</h5>
+                        </div>
+                        <ul className="space-y-1 text-xs sm:text-sm text-red-700">
+                          <li>• Emergency shutdown of critically damaged panels within 24 hours</li>
+                          <li>• Contact certified solar technician immediately</li>
+                          <li>• Document all damage with photos and timestamps</li>
+                          <li>• Check insurance coverage for potential claims</li>
+                        </ul>
+                      </div>
+                    )}
+                    
+                    {/* Short-term Actions */}
+                    {analysisResults.some(r => r.faults.some(f => f.severity === 'High' || f.severity === 'Medium')) && (
+                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">⚠</span>
+                          </div>
+                          <h5 className="font-semibold text-orange-800 text-sm">Short-term Actions (1-4 weeks)</h5>
+                        </div>
+                        <ul className="space-y-1 text-xs sm:text-sm text-orange-700">
+                          <li>• Schedule professional inspection for medium-priority faults</li>
+                          <li>• Implement enhanced monitoring for affected panels</li>
+                          <li>• Review and update maintenance schedule frequency</li>
+                          <li>• Consider thermal imaging analysis for comprehensive assessment</li>
+                        </ul>
+                      </div>
+                    )}
+                    
+                    {/* Preventive Maintenance */}
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">✓</span>
+                        </div>
+                        <h5 className="font-semibold text-green-800 text-sm">Preventive Maintenance Schedule</h5>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-green-700">
+                        <div>
+                          <div className="font-medium mb-1">Monthly Tasks:</div>
+                          <ul className="space-y-1">
+                            <li>• Visual inspection for obvious damage</li>
+                            <li>• Check electrical connections</li>
+                            <li>• Monitor performance metrics</li>
+                            <li>• Clean panels if needed</li>
+                          </ul>
                         </div>
                         <div>
-                          <p className="text-xs sm:text-sm text-secondary-custom">{recommendation}</p>
+                          <div className="font-medium mb-1">Quarterly Tasks:</div>
+                          <ul className="space-y-1">
+                            <li>• Professional cleaning service</li>
+                            <li>• Inverter performance check</li>
+                            <li>• Wiring and mounting inspection</li>
+                            <li>• Performance comparison analysis</li>
+                          </ul>
                         </div>
                       </div>
-                    ))}
+                    </div>
+                    
+                    {/* Performance Optimization */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">⚡</span>
+                        </div>
+                        <h5 className="font-semibold text-blue-800 text-sm">Performance Optimization</h5>
+                      </div>
+                      <ul className="space-y-1 text-xs sm:text-sm text-blue-700">
+                        <li>• Install monitoring system for real-time performance tracking</li>
+                        <li>• Consider panel-level optimizers for underperforming units</li>
+                        <li>• Review shading patterns and trim vegetation as needed</li>
+                        <li>• Update system firmware and software regularly</li>
+                      </ul>
+                    </div>
+                    
+                    {/* Cost-Benefit Analysis */}
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">$</span>
+                        </div>
+                        <h5 className="font-semibold text-purple-800 text-sm">Cost-Benefit Recommendations</h5>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-purple-700">
+                        <div>
+                          <div className="font-medium mb-1">Immediate ROI:</div>
+                          <ul className="space-y-1">
+                            <li>• Fix critical issues to prevent 25-40% power loss</li>
+                            <li>• Professional cleaning: 5-15% efficiency gain</li>
+                          </ul>
+                        </div>
+                        <div>
+                          <div className="font-medium mb-1">Long-term Value:</div>
+                          <ul className="space-y-1">
+                            <li>• Extend panel lifespan by 5-10 years</li>
+                            <li>• Maintain warranty coverage</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Export Options */}
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                  <Button className="flex-1 bg-primary hover:bg-blue-700 text-white text-sm h-10" onClick={exportToText}>
-                    <Download className="mr-1 sm:mr-2" size={14} />
-                    <span className="hidden sm:inline">Export TXT </span>Report
-                  </Button>
+                {/* Enhanced Export Options */}
+                <div className="bg-gradient-to-r from-gray-50 to-slate-50 rounded-lg p-4 border border-gray-200">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <div className="w-6 h-6 bg-gray-500 rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                      </svg>
+                    </div>
+                    <h4 className="font-semibold text-gray-800 text-sm">Export & Management</h4>
+                  </div>
                   
-                  <Button variant="outline" className="flex-1 text-sm h-10" onClick={exportToJson}>
-                    <Share className="mr-1 sm:mr-2" size={14} />
-                    <span className="hidden sm:inline">Export JSON </span>Data
-                  </Button>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+                    <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm h-11 shadow-md" onClick={exportToText}>
+                      <Download className="mr-1 sm:mr-2" size={14} />
+                      <div className="text-left">
+                        <div className="font-medium">TXT Report</div>
+                        <div className="text-xs opacity-90">Detailed analysis</div>
+                      </div>
+                    </Button>
+                    
+                    <Button variant="outline" className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 hover:bg-green-100 text-sm h-11 shadow-md" onClick={exportToJson}>
+                      <Share className="mr-1 sm:mr-2" size={14} />
+                      <div className="text-left">
+                        <div className="font-medium">JSON Data</div>
+                        <div className="text-xs opacity-70">Raw results</div>
+                      </div>
+                    </Button>
 
-                  <Button 
-                    variant="outline" 
-                    className="flex-1 text-sm h-10 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 hover:border-red-300" 
-                    onClick={clearAllResults}
-                  >
-                    <Trash2 className="mr-1 sm:mr-2" size={14} />
-                    <span className="hidden sm:inline">Clear All </span>Results
-                  </Button>
+                    <Button 
+                      variant="outline" 
+                      className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200 hover:bg-purple-100 text-sm h-11 shadow-md"
+                      onClick={() => {
+                        const summary = `
+Solar Panel Analysis Summary
+Generated: ${new Date().toLocaleString()}
+
+Total Panels Analyzed: ${analysisResults.length}
+Critical Issues: ${analysisResults.filter(r => r.faults.some(f => f.severity === 'Critical')).length}
+High Priority Issues: ${analysisResults.filter(r => r.faults.some(f => f.severity === 'High')).length}
+Medium Priority Issues: ${analysisResults.filter(r => r.faults.some(f => f.severity === 'Medium')).length}
+Healthy Panels: ${analysisResults.filter(r => r.faults.length === 0).length}
+
+Performance Impact:
+- Critical panels may experience 25-40% power loss
+- High priority panels may experience 10-25% power loss  
+- Medium priority panels may experience 5-10% power loss
+
+Recommended Actions:
+${analysisResults.some(r => r.faults.some(f => f.severity === 'Critical')) ? '• URGENT: Address critical issues within 24-48 hours' : ''}
+${analysisResults.some(r => r.faults.some(f => f.severity === 'High')) ? '• Schedule professional inspection within 1-2 weeks' : ''}
+• Implement regular monitoring and maintenance schedule
+• Consider professional cleaning service for optimal performance
+
+Next Steps:
+1. Address critical issues immediately
+2. Schedule maintenance for high/medium priority items
+3. Implement preventive maintenance schedule
+4. Monitor performance metrics regularly
+                        `.trim();
+                        
+                        const blob = new Blob([summary], { type: 'text/plain' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `solar-analysis-summary-${new Date().toISOString().split('T')[0]}.txt`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                      }}
+                    >
+                      <svg className="mr-1 sm:mr-2" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14,2 14,8 20,8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10,9 9,9 8,9"></polyline>
+                      </svg>
+                      <div className="text-left">
+                        <div className="font-medium">Summary</div>
+                        <div className="text-xs opacity-70">Executive brief</div>
+                      </div>
+                    </Button>
+
+                    <Button 
+                      variant="outline" 
+                      className="bg-gradient-to-r from-red-50 to-pink-50 border-red-200 hover:bg-red-100 text-red-600 hover:text-red-700 text-sm h-11 shadow-md" 
+                      onClick={clearAllResults}
+                    >
+                      <Trash2 className="mr-1 sm:mr-2" size={14} />
+                      <div className="text-left">
+                        <div className="font-medium">Clear All</div>
+                        <div className="text-xs opacity-70">Reset results</div>
+                      </div>
+                    </Button>
+                  </div>
+                  
+                  <div className="mt-3 text-xs text-gray-500 text-center">
+                    All exports include timestamp and analysis metadata for professional documentation
+                  </div>
                 </div>
               </CardContent>
             </Card>
