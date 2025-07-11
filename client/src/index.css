@@ -1,0 +1,300 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 98%);
+  --foreground: hsl(0, 0%, 13%);
+  --muted: hsl(0, 0%, 96%);
+  --muted-foreground: hsl(0, 0%, 46%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(0, 0%, 13%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(0, 0%, 13%);
+  --border: hsl(0, 0%, 88%);
+  --input: hsl(0, 0%, 88%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(142, 71%, 45%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --accent: hsl(36, 100%, 50%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 74%, 42%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(0, 0%, 13%);
+  --radius: 0.5rem;
+  --primary-custom: hsl(207, 90%, 54%);
+  --secondary-custom: hsl(0, 0%, 46%);
+  --success: hsl(120, 61%, 50%);
+  --success-foreground: hsl(0, 0%, 100%);
+  --text-primary: hsl(0, 0%, 13%);
+  --text-secondary: hsl(0, 0%, 46%);
+  --surface: hsl(0, 0%, 98%);
+  --primary-custom: hsl(207, 90%, 54%);
+  --secondary-custom: hsl(0, 0%, 46%);
+  --gray-50: hsl(210, 20%, 98%);
+  --gray-100: hsl(220, 14%, 96%);
+  --gray-200: hsl(220, 13%, 91%);
+  --gray-300: hsl(216, 12%, 84%);
+  --gray-400: hsl(218, 11%, 65%);
+  --gray-500: hsl(220, 9%, 46%);
+  --gray-600: hsl(215, 14%, 34%);
+  --gray-700: hsl(217, 19%, 27%);
+  --gray-800: hsl(215, 28%, 17%);
+  --gray-900: hsl(222, 84%, 5%);
+  --purple-400: hsl(262, 83%, 78%);
+  --purple-600: hsl(262, 83%, 58%);
+}
+
+/* Custom utility classes */
+.text-primary-custom {
+  color: var(--primary-custom);
+}
+
+.text-secondary-custom {
+  color: var(--secondary-custom);
+}
+
+.shadow-material {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.shadow-material:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+/* Canvas overlay styles */
+.analysis-overlay {
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: #f3f4f6;
+  min-height: 300px;
+}
+
+.analysis-overlay canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Improve grid layouts */
+.grid-responsive {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+@media (min-width: 1024px) {
+  .grid-responsive {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+}
+
+/* Enhanced slide-down animations */
+@keyframes slideDownFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  60% {
+    opacity: 0.8;
+    transform: translateY(-5px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Hide scrollbar for chat messages */
+.chat-scroll-area [data-radix-scroll-area-viewport] {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.chat-scroll-area [data-radix-scroll-area-viewport]::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
+
+.chat-scroll-area [data-radix-scroll-area-scrollbar] {
+  display: none !important;
+}
+
+/* Additional scrollbar hiding for all elements within chat */
+.chat-scroll-area * {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.chat-scroll-area *::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
+
+/* Hide main page scrollbar */
+body, html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  overflow-x: hidden;
+}
+
+body::-webkit-scrollbar, html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, and Opera */
+}
+
+/* Ensure proper page sizing */
+#root {
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+@keyframes slideDownBounce {
+  0% {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateY(-10px);
+  }
+  80% {
+    opacity: 0.9;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDownGrow {
+  0% {
+    opacity: 0;
+    transform: translateY(-25px) scaleY(0.3);
+    transform-origin: top;
+  }
+  40% {
+    opacity: 0.6;
+    transform: translateY(-8px) scaleY(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+/* Staggered animation for metric cards */
+@keyframes slideUpStagger {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Main slide-down animation classes */
+.slide-down-fade {
+  animation: slideDownFade 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.slide-down-bounce {
+  animation: slideDownBounce 0.9s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.slide-down-grow {
+  animation: slideDownGrow 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.slide-up-stagger {
+  animation: slideUpStagger 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Stagger delays for multiple elements */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+
+/* Progress bar animation */
+@keyframes progressFill {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.progress-animate {
+  animation: progressFill 2s ease-out forwards;
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(142, 71%, 45%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --accent: hsl(36, 100%, 50%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 74%, 42%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+  --success: hsl(120, 61%, 50%);
+  --success-foreground: hsl(0, 0%, 100%);
+  --text-primary: hsl(0, 0%, 98%);
+  --text-secondary: hsl(240, 5%, 64.9%);
+  --surface: hsl(240, 10%, 3.9%);
+}
+
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    background-color: var(--surface);
+    color: var(--text-primary);
+  }
+}
+
+@layer utilities {
+  .text-primary-custom {
+    color: var(--text-primary);
+  }
+  
+  .text-secondary-custom {
+    color: var(--text-secondary);
+  }
+  
+  .bg-surface {
+    background-color: var(--surface);
+  }
+  
+  .shadow-material {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1);
+  }
+  
+  .shadow-material-lg {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12), 0 12px 24px rgba(0,0,0,0.15);
+  }
+}

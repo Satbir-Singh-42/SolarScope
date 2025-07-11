@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: solarscope-ai
+    env: node
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: node start-production.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        fromService:
+          type: web
+          name: solarscope-ai
+          property: port
+      - key: DATABASE_URL
+        fromDatabase:
+          name: solarscope-db
+          property: connectionString
+      - key: GOOGLE_API_KEY
+        sync: false
+    healthCheckPath: /api/health
+
+databases:
+  - name: solarscope-db
+    databaseName: solarscope
+    user: solarscope
