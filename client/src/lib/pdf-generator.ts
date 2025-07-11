@@ -5,7 +5,7 @@ import { InstallationResult, FaultResult } from '../../../shared/schema';
 export async function generateInstallationPDF(
   result: InstallationResult,
   imageUrl: string,
-  analysisCanvasRef: React.RefObject<HTMLCanvasElement>
+  analysisCanvasRef?: React.RefObject<HTMLCanvasElement>
 ): Promise<void> {
   const pdf = new jsPDF('p', 'mm', 'a4');
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -48,28 +48,10 @@ export async function generateInstallationPDF(
 
   yPosition += 10;
 
-  // Original Image
+  // Original Image (simplified)
   if (imageUrl) {
     try {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = imageUrl;
-      });
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx?.drawImage(img, 0, 0);
-
-      const imgData = canvas.toDataURL('image/jpeg', 0.8);
-      const imgWidth = 80;
-      const imgHeight = (img.height / img.width) * imgWidth;
-
-      if (yPosition + imgHeight > pageHeight - 20) {
+      if (yPosition > pageHeight - 80) {
         pdf.addPage();
         yPosition = 20;
       }
@@ -77,16 +59,19 @@ export async function generateInstallationPDF(
       pdf.setFontSize(14);
       pdf.text('Original Rooftop Image', 20, yPosition);
       yPosition += 10;
-      pdf.addImage(imgData, 'JPEG', 20, yPosition, imgWidth, imgHeight);
-      yPosition += imgHeight + 15;
+      
+      // Add image directly without canvas conversion to avoid CORS issues
+      pdf.addImage(imageUrl, 'JPEG', 20, yPosition, 80, 60);
+      yPosition += 75;
     } catch (error) {
-      console.error('Error adding original image to PDF:', error);
+      console.warn('Could not add image to PDF (CORS/format issue):', error);
+      // Continue without image
     }
   }
 
-  // Analysis Overlay
-  if (analysisCanvasRef.current) {
-    try {
+  // Analysis Overlay (skip if canvas not available)
+  try {
+    if (analysisCanvasRef?.current) {
       const overlayCanvas = await html2canvas(analysisCanvasRef.current);
       const overlayData = overlayCanvas.toDataURL('image/png');
       const overlayWidth = 80;
@@ -102,9 +87,10 @@ export async function generateInstallationPDF(
       yPosition += 10;
       pdf.addImage(overlayData, 'PNG', 20, yPosition, overlayWidth, overlayHeight);
       yPosition += overlayHeight + 15;
-    } catch (error) {
-      console.error('Error adding analysis overlay to PDF:', error);
     }
+  } catch (error) {
+    console.warn('Analysis overlay not available for PDF:', error);
+    // Continue without overlay
   }
 
   // Recommendations
@@ -172,7 +158,7 @@ export async function generateInstallationPDF(
 export async function generateFaultDetectionPDF(
   result: FaultResult,
   imageUrl: string,
-  analysisCanvasRef: React.RefObject<HTMLCanvasElement>
+  analysisCanvasRef?: React.RefObject<HTMLCanvasElement>
 ): Promise<void> {
   const pdf = new jsPDF('p', 'mm', 'a4');
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -220,28 +206,10 @@ export async function generateFaultDetectionPDF(
 
   yPosition += 10;
 
-  // Original Image
+  // Original Image (simplified)
   if (imageUrl) {
     try {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = imageUrl;
-      });
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx?.drawImage(img, 0, 0);
-
-      const imgData = canvas.toDataURL('image/jpeg', 0.8);
-      const imgWidth = 80;
-      const imgHeight = (img.height / img.width) * imgWidth;
-
-      if (yPosition + imgHeight > pageHeight - 20) {
+      if (yPosition > pageHeight - 80) {
         pdf.addPage();
         yPosition = 20;
       }
@@ -249,16 +217,19 @@ export async function generateFaultDetectionPDF(
       pdf.setFontSize(14);
       pdf.text('Solar Panel System Image', 20, yPosition);
       yPosition += 10;
-      pdf.addImage(imgData, 'JPEG', 20, yPosition, imgWidth, imgHeight);
-      yPosition += imgHeight + 15;
+      
+      // Add image directly  
+      pdf.addImage(imageUrl, 'JPEG', 20, yPosition, 80, 60);
+      yPosition += 75;
     } catch (error) {
-      console.error('Error adding original image to PDF:', error);
+      console.warn('Could not add image to PDF:', error);
+      // Continue without image
     }
   }
 
-  // Analysis Overlay
-  if (analysisCanvasRef.current) {
-    try {
+  // Analysis Overlay (skip if canvas not available)
+  try {
+    if (analysisCanvasRef?.current) {
       const overlayCanvas = await html2canvas(analysisCanvasRef.current);
       const overlayData = overlayCanvas.toDataURL('image/png');
       const overlayWidth = 80;
@@ -274,9 +245,10 @@ export async function generateFaultDetectionPDF(
       yPosition += 10;
       pdf.addImage(overlayData, 'PNG', 20, yPosition, overlayWidth, overlayHeight);
       yPosition += overlayHeight + 15;
-    } catch (error) {
-      console.error('Error adding analysis overlay to PDF:', error);
     }
+  } catch (error) {
+    console.warn('Analysis overlay not available for PDF:', error);
+    // Continue without overlay
   }
 
   // Detailed Fault List
