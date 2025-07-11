@@ -65,34 +65,34 @@ export default function ValidationCard({ type, title, description, className, on
   const getAnimationDirection = () => {
     switch (type) {
       case "success":
-        return { x: -100 }; // Slide from left
+        return { x: 100 }; // Slide from right
       case "error":
-        return { x: 100 };  // Slide from right
+        return { x: 100 }; // Slide from right
       case "warning":
-        return { y: -100 }; // Slide from top
+        return { x: 100 }; // Slide from right
       case "info":
-        return { x: -100 }; // Slide from left
+        return { x: 100 }; // Slide from right
       case "validating":
-        return { scale: 0.8, opacity: 0 }; // Scale in
+        return { x: 100 }; // Slide from right
       default:
-        return { x: -100 };
+        return { x: 100 };
     }
   };
 
   const getPosition = () => {
     switch (type) {
       case "success":
-        return "top-4 left-4";
+        return "top-4 right-4";
       case "error":
         return "top-4 right-4";
       case "warning":
-        return "top-4 left-1/2 transform -translate-x-1/2";
+        return "top-4 right-4";
       case "info":
-        return "top-4 left-4";
+        return "top-4 right-4";
       case "validating":
-        return "top-4 left-1/2 transform -translate-x-1/2";
+        return "top-4 right-4";
       default:
-        return "top-4 left-4";
+        return "top-4 right-4";
     }
   };
 
