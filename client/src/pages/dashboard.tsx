@@ -50,6 +50,11 @@ export default function Dashboard() {
                   AI Assistant
                 </button>
               </Link>
+              <Link href="/articles">
+                <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">
+                  Solar News
+                </button>
+              </Link>
               <Link href="/about">
                 <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">
                   About

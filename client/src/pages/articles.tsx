@@ -5,7 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Calendar, Clock, TrendingUp, Zap, Leaf, DollarSign, Search, Filter, ChevronRight, ExternalLink } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Calendar, Clock, TrendingUp, Zap, Leaf, DollarSign, Search, Filter, ChevronRight, ExternalLink, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { motion } from "framer-motion";
@@ -35,15 +37,28 @@ export default function Articles() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch latest solar news using AI
   const { data: newsData, isLoading, error } = useQuery<NewsData>({
     queryKey: ['/api/solar-news'],
     queryFn: async () => {
-      const response = await apiRequest('/api/solar-news');
-      return response.json();
+      try {
+        const response = await apiRequest('/api/solar-news');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Failed to fetch solar news:', error);
+        throw error;
+      }
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
+    retry: 3,
+    retryDelay: 1000,
   });
 
   useEffect(() => {
@@ -82,6 +97,16 @@ export default function Articles() {
       day: 'numeric',
       year: 'numeric'
     });
+  };
+
+  const handleReadMore = (article: Article) => {
+    setSelectedArticle(article);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedArticle(null);
   };
 
   if (isLoading) {
@@ -209,7 +234,11 @@ export default function Articles() {
                           <span>Source: {filteredArticles[0].source}</span>
                         </div>
                       </div>
-                      <Button variant="outline" size="sm">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleReadMore(filteredArticles[0])}
+                      >
                         Read More <ChevronRight className="w-4 h-4 ml-1" />
                       </Button>
                     </div>
@@ -227,7 +256,7 @@ export default function Articles() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
                 >
-                  <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer">
+                  <Card className="h-full hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleReadMore(article)}>
                     <CardHeader className="pb-4">
                       <div className="flex items-start justify-between mb-2">
                         <Badge variant="outline" className="text-xs">
@@ -302,7 +331,7 @@ export default function Articles() {
                             {article.readTime} min read
                           </div>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" onClick={() => handleReadMore(article)}>
                           <ExternalLink className="w-4 h-4 mr-1" />
                           Read More
                         </Button>
@@ -364,6 +393,68 @@ export default function Articles() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Article Reading Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold pr-8">
+              {selectedArticle?.title}
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[70vh] pr-4">
+            {selectedArticle && (
+              <div className="space-y-6">
+                <div className="flex items-center gap-4 text-sm text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline">
+                      {getCategoryIcon(selectedArticle.category)}
+                      <span className="ml-1">{selectedArticle.category}</span>
+                    </Badge>
+                    <span>{formatDate(selectedArticle.publishedAt)}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    {selectedArticle.readTime} min read
+                  </div>
+                  <span>Source: {selectedArticle.source}</span>
+                </div>
+
+                <div className="prose prose-lg max-w-none">
+                  <p className="text-xl text-gray-700 leading-relaxed">
+                    {selectedArticle.summary}
+                  </p>
+                  
+                  <Separator className="my-6" />
+                  
+                  <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+                    {selectedArticle.content}
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2 pt-4">
+                  {selectedArticle.tags.map(tag => (
+                    <Badge key={tag} variant="secondary" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </ScrollArea>
+          <div className="flex justify-end gap-2 pt-4">
+            <Button variant="outline" onClick={handleCloseModal}>
+              Close
+            </Button>
+            {selectedArticle?.url && (
+              <Button onClick={() => window.open(selectedArticle.url, '_blank')}>
+                <ExternalLink className="w-4 h-4 mr-1" />
+                Read Original
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
