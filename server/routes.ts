@@ -190,12 +190,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
 
-        // For now, accept all valid image files
-        // In production, you would use AI classification here
-        res.json({
-          isValid: true,
-          message: "Image validated successfully"
-        });
+        // Use AI classification to validate image content
+        try {
+          const { classifyImage } = await import("./ai-service");
+          const isValid = await classifyImage(tempFilePath, type === 'installation' ? 'rooftop' : 'solar-panel');
+          
+          if (isValid) {
+            res.json({
+              isValid: true,
+              message: "Image validated successfully"
+            });
+          } else {
+            res.status(400).json({
+              error: type === 'installation' 
+                ? "Invalid image for installation analysis. Please upload a rooftop or building image."
+                : "Invalid image for fault detection. Please upload an image showing solar panels or photovoltaic equipment."
+            });
+          }
+        } catch (aiError) {
+          console.error('AI classification error:', aiError);
+          // Fallback to basic validation if AI fails
+          res.json({
+            isValid: true,
+            message: "Image validated successfully (basic validation)"
+          });
+        }
         
       } catch (error) {
         console.error('Image validation error:', error);

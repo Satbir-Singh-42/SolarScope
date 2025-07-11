@@ -34,7 +34,7 @@ function validateImage(imagePath: string): boolean {
 }
 
 // Image classification to ensure only solar panel/roof images are processed
-async function classifyImage(imagePath: string, expectedType: 'rooftop' | 'solar-panel'): Promise<boolean> {
+export async function classifyImage(imagePath: string, expectedType: 'rooftop' | 'solar-panel'): Promise<boolean> {
   try {
     console.log(`Classifying image for ${expectedType} content`);
     const imageBytes = fs.readFileSync(imagePath);
