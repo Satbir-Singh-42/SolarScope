@@ -122,6 +122,7 @@ export default function Chat() {
   const [userInteracting, setUserInteracting] = useState(false);
   const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<number | null>(null);
+  const [apiStatus, setApiStatus] = useState<'connected' | 'error' | 'checking'>('checking');
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('chatPageMessages');
@@ -156,6 +157,34 @@ export default function Chat() {
   useEffect(() => {
     localStorage.setItem('chatPageMessages', JSON.stringify(messages));
   }, [messages]);
+
+  // Check API status on component mount
+  useEffect(() => {
+    const checkApiStatus = async () => {
+      try {
+        const response = await fetch('/api/health');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.status === 'healthy') {
+            setApiStatus('connected');
+          } else {
+            setApiStatus('error');
+          }
+        } else {
+          setApiStatus('error');
+        }
+      } catch (error) {
+        setApiStatus('error');
+      }
+    };
+
+    checkApiStatus();
+    
+    // Check API status every 30 seconds
+    const interval = setInterval(checkApiStatus, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -210,6 +239,14 @@ export default function Chat() {
       return response.json();
     },
     onSuccess: (response) => {
+      // Update API status based on response content
+      if (response.response && !response.response.includes("I'm here to help with your solar")) {
+        setApiStatus('connected');
+      } else if (response.response && response.response.includes("I'm here to help with your solar")) {
+        // This indicates fallback response, meaning API might be down
+        setApiStatus('error');
+      }
+      
       const newMessageId = Date.now() + 1;
       setMessages(prev => [...prev, {
         id: newMessageId,
@@ -222,6 +259,7 @@ export default function Chat() {
       setTypingMessageId(newMessageId);
     },
     onError: (error: any) => {
+      setApiStatus('error');
       console.error('AI Chat error:', error);
       
       // Create a more helpful error message based on the error type
@@ -711,17 +749,29 @@ export default function Chat() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {showOnlineStatus && (
-                      <Badge 
-                        variant="secondary" 
-                        className={`flex items-center gap-1 px-2 py-1 transition-all duration-1000 ${
-                          !showOnlineStatus ? 'opacity-0 transform scale-95' : 'opacity-100 transform scale-100'
-                        }`}
-                      >
-                        <div className="w-2 h-2 bg-white rounded-full animate-pulse border border-gray-300"></div>
-                        <span className="text-xs">Online</span>
-                      </Badge>
-                    )}
+                    <Badge 
+                      variant="secondary" 
+                      className={`flex items-center gap-1 px-2 py-1 transition-all duration-300 ${
+                        apiStatus === 'connected' 
+                          ? 'bg-green-100 text-green-700 border-green-200' 
+                          : apiStatus === 'error' 
+                          ? 'bg-red-100 text-red-700 border-red-200' 
+                          : 'bg-yellow-100 text-yellow-700 border-yellow-200'
+                      }`}
+                    >
+                      <div className={`w-2 h-2 rounded-full ${
+                        apiStatus === 'connected' 
+                          ? 'bg-green-500 animate-pulse' 
+                          : apiStatus === 'error' 
+                          ? 'bg-red-500' 
+                          : 'bg-yellow-500 animate-bounce'
+                      }`}></div>
+                      <span className="text-xs font-medium">
+                        {apiStatus === 'connected' ? 'API Connected' : 
+                         apiStatus === 'error' ? 'API Offline' : 
+                         'Checking API...'}
+                      </span>
+                    </Badge>
                     {/* New Conversation Button - Only show if there are user messages */}
                     {messages.some(msg => msg.sender === 'user') && (
                       <Button
