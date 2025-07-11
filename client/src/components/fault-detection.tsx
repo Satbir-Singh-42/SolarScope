@@ -892,7 +892,7 @@ ${result.recommendations.map(rec => `- ${rec}`).join('\n')}
                       </div>
                     </Button>
                     
-                    <Button variant="outline" className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 hover:shadow-lg text-sm h-11 shadow-md" onClick={exportToJson}>
+                    <Button variant="outline" className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 hover:shadow-lg text-sm h-11 shadow-md text-[#000000]" onClick={exportToJson}>
                       <Share className="mr-1 sm:mr-2" size={14} />
                       <div className="text-left">
                         <div className="font-medium">JSON Data</div>
