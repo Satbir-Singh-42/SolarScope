@@ -1,6 +1,5 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, AlertCircle, AlertTriangle, Info, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
+import { CheckCircle, XCircle, AlertTriangle, Info, Loader2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ValidationCardProps {
@@ -8,78 +7,99 @@ interface ValidationCardProps {
   title: string;
   description: string;
   className?: string;
+  onClose?: () => void;
 }
 
-export default function ValidationCard({ type, title, description, className }: ValidationCardProps) {
+export default function ValidationCard({ type, title, description, className, onClose }: ValidationCardProps) {
   const getIcon = () => {
     switch (type) {
       case "validating":
-        return <Loader2 className="h-5 w-5 animate-spin" />;
+        return <Loader2 className="h-5 w-5 animate-spin text-blue-600" />;
       case "success":
-        return <CheckCircle className="h-5 w-5" />;
+        return <CheckCircle className="h-5 w-5 text-green-600" />;
       case "error":
-        return <AlertCircle className="h-5 w-5" />;
+        return <XCircle className="h-5 w-5 text-red-600" />;
       case "warning":
-        return <AlertTriangle className="h-5 w-5" />;
+        return <AlertTriangle className="h-5 w-5 text-orange-600" />;
       case "info":
-        return <Info className="h-5 w-5" />;
+        return <Info className="h-5 w-5 text-blue-600" />;
       default:
-        return <Info className="h-5 w-5" />;
+        return <Info className="h-5 w-5 text-blue-600" />;
     }
   };
 
   const getStyles = () => {
     switch (type) {
       case "validating":
-        return "border-blue-200 bg-blue-50 text-blue-900";
+        return "bg-white border-blue-200 shadow-lg";
       case "success":
-        return "border-green-200 bg-green-50 text-green-900";
+        return "bg-white border-green-200 shadow-lg";
       case "error":
-        return "border-red-200 bg-red-50 text-red-900";
+        return "bg-white border-red-200 shadow-lg";
       case "warning":
-        return "border-orange-200 bg-orange-50 text-orange-900";
+        return "bg-white border-orange-200 shadow-lg";
       case "info":
-        return "border-blue-200 bg-blue-50 text-blue-900";
+        return "bg-white border-blue-200 shadow-lg";
       default:
-        return "border-gray-200 bg-gray-50 text-gray-900";
+        return "bg-white border-gray-200 shadow-lg";
     }
   };
 
-  const getBadgeVariant = () => {
+  const getTitleColor = () => {
     switch (type) {
       case "validating":
-        return "secondary";
+        return "text-blue-700";
       case "success":
-        return "default";
+        return "text-green-700";
       case "error":
-        return "destructive";
+        return "text-red-700";
       case "warning":
-        return "secondary";
+        return "text-orange-700";
       case "info":
-        return "secondary";
+        return "text-blue-700";
       default:
-        return "secondary";
+        return "text-gray-700";
     }
   };
 
   return (
-    <Card className={cn("border-l-4 transition-all duration-300", getStyles(), className)}>
-      <CardContent className="p-4">
-        <div className="flex items-start space-x-3">
-          <div className="flex-shrink-0 mt-0.5">
-            {getIcon()}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-semibold text-sm">{title}</h3>
-              <Badge variant={getBadgeVariant()} className="text-xs">
-                {type.charAt(0).toUpperCase() + type.slice(1)}
-              </Badge>
-            </div>
-            <p className="text-sm opacity-90 leading-relaxed">{description}</p>
-          </div>
+    <motion.div
+      initial={{ opacity: 0, y: -20, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      transition={{ 
+        duration: 0.4,
+        type: "spring",
+        stiffness: 400,
+        damping: 25
+      }}
+      className={cn(
+        "relative rounded-lg border-2 p-4 max-w-sm mx-auto",
+        getStyles(),
+        className
+      )}
+    >
+      <div className="flex items-start space-x-3">
+        <div className="flex-shrink-0">
+          {getIcon()}
         </div>
-      </CardContent>
-    </Card>
+        <div className="flex-1 min-w-0">
+          <h3 className={cn("text-sm font-semibold", getTitleColor())}>
+            {title}
+          </h3>
+          <p className="mt-1 text-xs text-gray-600">
+            {description}
+          </p>
+        </div>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 rounded-full p-1 hover:bg-gray-100 transition-colors"
+          >
+            <X className="h-4 w-4 text-gray-500" />
+          </button>
+        )}
+      </div>
+    </motion.div>
   );
 }
