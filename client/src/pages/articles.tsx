@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Calendar, Clock, TrendingUp, Zap, Leaf, DollarSign, Search, Filter, ChevronRight, ExternalLink, Newspaper, RefreshCw } from "lucide-react";
 import { Link } from "wouter";
@@ -233,6 +233,9 @@ export default function Articles() {
               <Link href="/chat">
                 <button className="text-gray-600 hover:text-blue-600 transition-colors">AI Assistant</button>
               </Link>
+              <Link href="/articles">
+                <button className="text-blue-600 font-medium">Articles</button>
+              </Link>
               <Link href="/about">
                 <button className="text-gray-600 hover:text-blue-600 transition-colors">About</button>
               </Link>
@@ -250,28 +253,21 @@ export default function Articles() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-12">
+      {/* Page Header */}
+      <div className="bg-white border-b border-gray-200 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center"
-          >
-            <h2 className="text-4xl font-bold mb-4">Latest Solar Industry News</h2>
-            <p className="text-xl text-blue-100 mb-6">Stay updated with the latest developments in solar technology, market trends, and industry insights</p>
-            <div className="flex justify-center space-x-4">
-              <Badge variant="secondary" className="bg-white/20 text-white">
-                <Zap className="w-4 h-4 mr-1" />
-                Real-time Updates
-              </Badge>
-              <Badge variant="secondary" className="bg-white/20 text-white">
-                <Leaf className="w-4 h-4 mr-1" />
-                Industry Insights
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Solar Industry News</h2>
+              <p className="text-gray-600 mt-1">Latest developments in solar technology and market trends</p>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                <Zap className="w-3 h-3 mr-1" />
+                Live Updates
               </Badge>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 
@@ -513,6 +509,9 @@ export default function Articles() {
             <DialogTitle className="text-2xl font-bold pr-8">
               {selectedArticle?.title}
             </DialogTitle>
+            <DialogDescription className="text-gray-600">
+              {selectedArticle?.summary}
+            </DialogDescription>
           </DialogHeader>
           <ScrollArea className="h-[70vh] pr-4">
             {selectedArticle && (

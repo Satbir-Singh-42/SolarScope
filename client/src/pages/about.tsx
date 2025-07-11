@@ -57,6 +57,11 @@ export default function About() {
                   AI Assistant
                 </button>
               </Link>
+              <Link href="/articles">
+                <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">
+                  Articles
+                </button>
+              </Link>
               <button className="text-primary font-medium transition-all duration-300 ease-in-out transform hover:scale-105">
                 About
               </button>
