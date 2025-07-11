@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { InstallationResult, FaultResult } from '../../../shared/schema';
 
 export async function generateInstallationPDF(
@@ -51,6 +52,73 @@ export async function generateInstallationPDF(
     });
 
     yPosition += 10;
+
+    // Analysis Image (if available)
+    if (imageUrl) {
+      try {
+        if (yPosition > pageHeight - 80) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+
+        pdf.setFontSize(14);
+        pdf.text('Original Rooftop Image', 20, yPosition);
+        yPosition += 10;
+        
+        // Create image element and convert to base64
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = imageUrl;
+        });
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+        
+        const imgData = canvas.toDataURL('image/jpeg', 0.8);
+        const imgWidth = 80;
+        const imgHeight = (img.height / img.width) * imgWidth;
+        
+        pdf.addImage(imgData, 'JPEG', 20, yPosition, imgWidth, imgHeight);
+        yPosition += imgHeight + 15;
+      } catch (error) {
+        console.warn('Could not add image to PDF:', error);
+      }
+    }
+
+    // Analysis Visualization (if available)
+    if (analysisCanvasRef?.current) {
+      try {
+        if (yPosition > pageHeight - 80) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+
+        pdf.setFontSize(14);
+        pdf.text('Panel Layout Analysis', 20, yPosition);
+        yPosition += 10;
+
+        const overlayCanvas = await html2canvas(analysisCanvasRef.current, {
+          backgroundColor: '#f3f4f6',
+          scale: 1,
+          logging: false
+        });
+        
+        const overlayData = overlayCanvas.toDataURL('image/png');
+        const overlayWidth = 80;
+        const overlayHeight = (overlayCanvas.height / overlayCanvas.width) * overlayWidth;
+
+        pdf.addImage(overlayData, 'PNG', 20, yPosition, overlayWidth, overlayHeight);
+        yPosition += overlayHeight + 15;
+      } catch (error) {
+        console.warn('Could not add analysis visualization to PDF:', error);
+      }
+    }
 
     // Recommendations
     if (result.recommendations && result.recommendations.length > 0) {
@@ -168,6 +236,73 @@ export async function generateFaultDetectionPDF(
     });
 
     yPosition += 10;
+
+    // Analysis Image (if available)
+    if (imageUrl) {
+      try {
+        if (yPosition > pageHeight - 80) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+
+        pdf.setFontSize(14);
+        pdf.text('Solar Panel System Image', 20, yPosition);
+        yPosition += 10;
+        
+        // Create image element and convert to base64
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        await new Promise((resolve, reject) => {
+          img.onload = resolve;
+          img.onerror = reject;
+          img.src = imageUrl;
+        });
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx?.drawImage(img, 0, 0);
+        
+        const imgData = canvas.toDataURL('image/jpeg', 0.8);
+        const imgWidth = 80;
+        const imgHeight = (img.height / img.width) * imgWidth;
+        
+        pdf.addImage(imgData, 'JPEG', 20, yPosition, imgWidth, imgHeight);
+        yPosition += imgHeight + 15;
+      } catch (error) {
+        console.warn('Could not add image to PDF:', error);
+      }
+    }
+
+    // Fault Detection Visualization (if available)
+    if (analysisCanvasRef?.current) {
+      try {
+        if (yPosition > pageHeight - 80) {
+          pdf.addPage();
+          yPosition = 20;
+        }
+
+        pdf.setFontSize(14);
+        pdf.text('Fault Detection Analysis', 20, yPosition);
+        yPosition += 10;
+
+        const overlayCanvas = await html2canvas(analysisCanvasRef.current, {
+          backgroundColor: '#f3f4f6',
+          scale: 1,
+          logging: false
+        });
+        
+        const overlayData = overlayCanvas.toDataURL('image/png');
+        const overlayWidth = 80;
+        const overlayHeight = (overlayCanvas.height / overlayCanvas.width) * overlayWidth;
+
+        pdf.addImage(overlayData, 'PNG', 20, yPosition, overlayWidth, overlayHeight);
+        yPosition += overlayHeight + 15;
+      } catch (error) {
+        console.warn('Could not add analysis visualization to PDF:', error);
+      }
+    }
 
     // Detailed Fault List
     if (result.faults.length > 0) {
