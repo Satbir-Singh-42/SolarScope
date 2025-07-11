@@ -416,6 +416,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Solar News endpoint
+  app.get('/api/solar-news', async (req, res) => {
+    try {
+      const { GoogleGenerativeAI } = await import('@google/genai');
+      const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
+
+      const prompt = `Generate 12 realistic solar panel industry news articles for 2025. Return ONLY valid JSON in this exact format:
+{
+  "articles": [
+    {
+      "id": "unique-id",
+      "title": "Article title",
+      "summary": "Brief summary (50-80 words)",
+      "content": "Full article content",
+      "category": "technology|environment|market|policy",
+      "publishedAt": "2025-01-XX",
+      "readTime": 3-8,
+      "trending": true/false,
+      "tags": ["tag1", "tag2", "tag3"],
+      "source": "Solar Industry Magazine|Energy News|Tech Today|Green Business"
+    }
+  ],
+  "categories": ["technology", "environment", "market", "policy"],
+  "trending": [first 3 articles with trending:true]
+}
+
+Focus on current trends: perovskite technology, AI optimization, energy storage, cost reductions, government policies, sustainability initiatives. Make content realistic and informative.`;
+
+      const result = await model.generateContent(prompt);
+      const text = result.response.text();
+      
+      // Clean and parse JSON
+      const cleanedText = text.replace(/```json\s*|\s*```/g, '').trim();
+      let newsData;
+      
+      try {
+        newsData = JSON.parse(cleanedText);
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+        throw new Error('Failed to parse AI response');
+      }
+
+      // Ensure trending articles are set
+      if (newsData.articles) {
+        newsData.trending = newsData.articles.filter((article: any) => article.trending).slice(0, 3);
+      }
+
+      res.json(newsData);
+    } catch (error) {
+      console.error('Solar news generation error:', error);
+      res.status(500).json({ error: 'Failed to generate solar news' });
+    }
+  });
+
   // AI Chat endpoint with conversation history
   app.post("/api/ai/chat", async (req, res) => {
     try {
