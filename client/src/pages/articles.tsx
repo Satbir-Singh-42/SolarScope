@@ -215,33 +215,33 @@ export default function Articles() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 pt-16">
+    <div className="min-h-screen bg-surface pt-16">
       {/* Navigation Header */}
-      <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
+      <header className="bg-white shadow-material fixed top-0 left-0 right-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-lg flex items-center justify-center">
                 <Newspaper className="text-white" size={20} />
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-blue-600">Solar Industry News</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-primary">Articles</h1>
             </div>
             <nav className="hidden md:flex items-center space-x-8">
               <Link href="/">
-                <button className="text-gray-600 hover:text-blue-600 transition-colors">Dashboard</button>
+                <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">Dashboard</button>
               </Link>
               <Link href="/chat">
-                <button className="text-gray-600 hover:text-blue-600 transition-colors">AI Assistant</button>
+                <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">AI Assistant</button>
               </Link>
               <Link href="/articles">
-                <button className="text-blue-600 font-medium">Articles</button>
+                <button className="text-primary font-medium transition-all duration-300 ease-in-out transform hover:scale-105">Articles</button>
               </Link>
               <Link href="/about">
-                <button className="text-gray-600 hover:text-blue-600 transition-colors">About</button>
+                <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">About</button>
               </Link>
               <Button onClick={handleRefresh} variant="outline" size="sm" disabled={isRefreshing}>
                 <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-                Refresh Articles
+                Refresh
               </Button>
             </nav>
             <div className="md:hidden">
@@ -252,24 +252,6 @@ export default function Articles() {
           </div>
         </div>
       </header>
-
-      {/* Page Header */}
-      <div className="bg-white border-b border-gray-200 py-6">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Solar Industry News</h2>
-              <p className="text-gray-600 mt-1">Latest developments in solar technology and market trends</p>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                <Zap className="w-3 h-3 mr-1" />
-                Live Updates
-              </Badge>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Search and Filter */}
