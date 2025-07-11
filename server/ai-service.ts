@@ -1608,59 +1608,22 @@ function generateRecommendations(faults: any[]): string[] {
   
   // Critical severity recommendations
   if (severities.has('Critical')) {
-    recommendations.push('URGENT: Immediate professional inspection and intervention required');
-    recommendations.push('Consider emergency shutdown of affected panels to prevent safety hazards');
-    recommendations.push('Contact certified solar technician within 24 hours');
+    recommendations.push('Check panels yourself for visible damage');
+    recommendations.push('Turn off system if major cracks found');
+    recommendations.push('Call solar technician within 24 hours');
   }
   
   // High severity recommendations
   if (severities.has('High')) {
-    recommendations.push('Schedule professional maintenance within 1-2 weeks');
-    recommendations.push('Monitor system performance closely for further degradation');
-  }
-  
-  // Specific fault type recommendations
-  if (faultTypes.has('Hot Spot')) {
-    recommendations.push('Verify bypass diode functionality and replace if necessary');
-    recommendations.push('Ensure adequate ventilation clearance around panels (minimum 6 inches)');
-    recommendations.push('Check for partial shading sources during peak sun hours');
-  }
-  
-  if (faultTypes.has('Dirt/Debris')) {
-    recommendations.push('Implement regular cleaning schedule (quarterly for most locations)');
-    recommendations.push('Use deionized water and soft brush for cleaning to avoid scratches');
-    recommendations.push('Consider automated cleaning systems for large installations');
-  }
-  
-  if (faultTypes.has('Micro-crack')) {
-    recommendations.push('Prioritize crack repair before thermal expansion/contraction worsens damage');
-    recommendations.push('Implement vibration monitoring if panels are near high-traffic areas');
-    recommendations.push('Document crack patterns for warranty claims if applicable');
-  }
-  
-  if (faultTypes.has('Shading')) {
-    recommendations.push('Evaluate trimming or removal of vegetation causing shading');
-    recommendations.push('Consider micro-inverters or power optimizers to minimize shading impact');
-    recommendations.push('Assess feasibility of panel relocation if shading is permanent');
-  }
-  
-  if (faultTypes.has('Corrosion')) {
-    recommendations.push('Apply corrosion-resistant coating to affected metal components');
-    recommendations.push('Improve drainage around panel mounting areas');
-    recommendations.push('Replace corroded electrical connections with marine-grade components');
-  }
-  
-  if (faultTypes.has('Delamination')) {
-    recommendations.push('Seal affected edges immediately to prevent moisture ingress');
-    recommendations.push('Monitor for electrical performance degradation');
-    recommendations.push('Plan for panel replacement if delamination continues to spread');
+    recommendations.push('Schedule professional check within 2 weeks');
+    recommendations.push('Monitor your power output daily');
   }
   
   // General recommendations
   if (faults.length > 0) {
-    recommendations.push('Implement monthly visual inspections to catch issues early');
-    recommendations.push('Document all findings with photos and dates for tracking');
-    recommendations.push('Consider thermal imaging inspection for comprehensive fault detection');
+    recommendations.push('Look for damage monthly');
+    recommendations.push('Clean panels if dirty');
+    recommendations.push('Take photos of any issues');
   }
   
   if (faults.length === 0) {
