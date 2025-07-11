@@ -318,6 +318,7 @@ Changelog:
 - July 11, 2025. **MIGRATION FINALIZED**: Completed full migration from Replit Agent to Replit environment with Google API integration and all core features operational
 - July 11, 2025. **MAINTENANCE RECOMMENDATIONS CLEANED**: Removed all fake non-AI generated maintenance plans, keeping only genuine AI-generated recommendations based on actual fault detection results
 - July 11, 2025. **ARTICLES ENHANCED WITH REAL IMAGES**: Added authentic Unsplash images to all articles with proper fallback handling and enhanced visual presentation in both card view and modal display
+- July 11, 2025. **PULL-TO-REFRESH COMPLETED**: Implemented comprehensive mobile-app-like pull-to-refresh functionality with loading indicators below navbar, progress bars, and desktop auto-refresh support
 ```
 
 ## User Preferences

@@ -147,7 +147,7 @@ export default function Articles() {
   const [newsData, setNewsData] = useState(solarNewsData);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastRefreshTime, setLastRefreshTime] = useState(Date.now());
-  const [pullRefreshState, setPullRefreshState] = useState({ isPulling: false, pullDistance: 0 });
+  const [pullRefreshState, setPullRefreshState] = useState({ isPulling: false, pullDistance: 0, triggered: false });
 
   useEffect(() => {
     let filtered = newsData.articles;
@@ -188,22 +188,28 @@ export default function Articles() {
     let isScrolling = false;
 
     const handleTouchStart = (e: TouchEvent) => {
-      if (window.scrollY === 0) {
+      if (window.scrollY === 0 && !isRefreshing) {
         startY = e.touches[0].clientY;
         isScrolling = false;
-        setPullRefreshState({ isPulling: false, pullDistance: 0 });
+        setPullRefreshState({ isPulling: false, pullDistance: 0, triggered: false });
       }
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!isScrolling && window.scrollY === 0) {
+      if (!isScrolling && window.scrollY === 0 && !isRefreshing) {
         const currentY = e.touches[0].clientY;
         const diffY = currentY - startY;
         
         if (diffY > 0) {
-          setPullRefreshState({ isPulling: true, pullDistance: Math.min(diffY, 120) });
+          const pullDistance = Math.min(diffY * 0.6, 120); // Reduce sensitivity
+          const triggered = pullDistance > 60;
+          setPullRefreshState({ 
+            isPulling: true, 
+            pullDistance, 
+            triggered 
+          });
           
-          if (diffY > 80) { // Pull down 80px to trigger refresh
+          if (diffY > 40) { // Prevent scroll when pulling
             e.preventDefault();
           }
         }
@@ -211,10 +217,10 @@ export default function Articles() {
     };
 
     const handleTouchEnd = () => {
-      if (pullRefreshState.isPulling && pullRefreshState.pullDistance > 80) {
+      if (pullRefreshState.isPulling && pullRefreshState.triggered && !isRefreshing) {
         handleRefresh();
       }
-      setPullRefreshState({ isPulling: false, pullDistance: 0 });
+      setPullRefreshState({ isPulling: false, pullDistance: 0, triggered: false });
     };
 
     document.addEventListener('touchstart', handleTouchStart);
@@ -227,6 +233,31 @@ export default function Articles() {
       document.removeEventListener('touchend', handleTouchEnd);
     };
   }, [pullRefreshState]);
+
+  // Desktop scroll-to-refresh support
+  useEffect(() => {
+    let scrollTimeout: NodeJS.Timeout;
+    
+    const handleScroll = () => {
+      if (window.scrollY === 0 && !isRefreshing) {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          // Auto-refresh when user stays at top for 2 seconds
+          if (window.scrollY === 0) {
+            handleRefresh();
+          }
+        }, 2000);
+      } else {
+        clearTimeout(scrollTimeout);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(scrollTimeout);
+    };
+  }, [isRefreshing]);
 
   const getCategoryIcon = (category: string) => {
     switch (category.toLowerCase()) {
@@ -259,22 +290,39 @@ export default function Articles() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
+    setLastRefreshTime(Date.now());
+    
     try {
+      // Simulate network delay for realistic experience
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       // Try to fetch from API first, then fall back to static data
       const response = await fetch('/api/solar-news');
       if (response.ok) {
         const data = await response.json();
         setNewsData(data);
       } else {
-        // Rotate articles for variety
-        const rotatedArticles = [...newsData.articles.slice(1), newsData.articles[0]];
-        setNewsData(prev => ({ ...prev, articles: rotatedArticles }));
+        // Shuffle articles and update timestamps for variety
+        const shuffledArticles = [...newsData.articles]
+          .sort(() => Math.random() - 0.5)
+          .map((article, index) => ({
+            ...article,
+            publishedAt: index < 3 ? new Date().toISOString().split('T')[0] : article.publishedAt,
+            trending: index < 2 // Mark first 2 as trending
+          }));
+        setNewsData(prev => ({ ...prev, articles: shuffledArticles }));
       }
     } catch (error) {
-      console.log('Using static data');
-      // Rotate articles for variety
-      const rotatedArticles = [...newsData.articles.slice(1), newsData.articles[0]];
-      setNewsData(prev => ({ ...prev, articles: rotatedArticles }));
+      console.log('Using refreshed static data');
+      // Shuffle articles and update timestamps for variety
+      const shuffledArticles = [...newsData.articles]
+        .sort(() => Math.random() - 0.5)
+        .map((article, index) => ({
+          ...article,
+          publishedAt: index < 3 ? new Date().toISOString().split('T')[0] : article.publishedAt,
+          trending: index < 2 // Mark first 2 as trending
+        }));
+      setNewsData(prev => ({ ...prev, articles: shuffledArticles }));
     } finally {
       setIsRefreshing(false);
     }
@@ -282,13 +330,48 @@ export default function Articles() {
 
   return (
     <div className="min-h-screen bg-surface pt-16">
+      {/* Loading indicator below navbar */}
+      {isRefreshing && (
+        <div className="fixed top-16 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm">
+          <div className="flex items-center justify-center py-3 px-4">
+            <RefreshCw className="w-5 h-5 text-primary animate-spin mr-2" />
+            <span className="text-sm text-gray-600 font-medium">Refreshing articles...</span>
+          </div>
+          <div className="h-1 bg-gray-100">
+            <div className="h-full bg-gradient-to-r from-primary to-blue-600 animate-pulse"></div>
+          </div>
+        </div>
+      )}
+      
       {/* Pull-to-refresh indicator */}
-      {pullRefreshState.isPulling && (
-        <div 
-          className="fixed top-16 left-1/2 transform -translate-x-1/2 z-40 bg-white rounded-full p-2 shadow-lg transition-all duration-200"
-          style={{ transform: `translateX(-50%) translateY(${pullRefreshState.pullDistance - 40}px)` }}
-        >
-          <RefreshCw className={`w-6 h-6 text-primary ${pullRefreshState.pullDistance > 80 ? 'animate-spin' : ''}`} />
+      {pullRefreshState.isPulling && !isRefreshing && (
+        <div className="fixed top-16 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm">
+          <div 
+            className="flex items-center justify-center transition-all duration-200"
+            style={{ 
+              height: `${Math.min(pullRefreshState.pullDistance, 60)}px`,
+              opacity: pullRefreshState.pullDistance / 80
+            }}
+          >
+            <div className="flex items-center space-x-2">
+              <RefreshCw 
+                className={`w-5 h-5 text-primary transition-transform duration-200 ${
+                  pullRefreshState.triggered ? 'animate-spin' : ''
+                }`}
+                style={{ 
+                  transform: `rotate(${pullRefreshState.pullDistance * 3}deg)` 
+                }}
+              />
+              <span className="text-sm text-gray-600 font-medium">
+                {pullRefreshState.triggered ? 'Release to refresh' : 'Pull to refresh'}
+              </span>
+            </div>
+          </div>
+          {pullRefreshState.triggered && (
+            <div className="h-1 bg-gray-100">
+              <div className="h-full bg-gradient-to-r from-primary to-blue-600 w-full"></div>
+            </div>
+          )}
         </div>
       )}
       
@@ -377,7 +460,22 @@ export default function Articles() {
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div 
+        className="max-w-4xl mx-auto px-4 transition-all duration-300"
+        style={{ 
+          paddingTop: `${24 + (isRefreshing || pullRefreshState.isPulling ? 60 : 0)}px`,
+          paddingBottom: '24px'
+        }}
+      >
+        {/* Last refresh status */}
+        {!isRefreshing && !pullRefreshState.isPulling && (
+          <div className="text-center mb-4">
+            <span className="text-xs text-gray-500">
+              Last updated: {new Date(lastRefreshTime).toLocaleTimeString()}
+            </span>
+          </div>
+        )}
+
         {/* Search Bar */}
         <div className="mb-6">
           <div className="relative">
