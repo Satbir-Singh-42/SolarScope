@@ -757,122 +757,36 @@ ${result.recommendations.map(rec => `- ${rec}`).join('\n')}
                       </div>
                     )}
                     
-                    {/* Preventive Maintenance - AI & Risk-Based */}
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">✓</span>
+                    {/* Low Priority Actions - AI Generated Only */}
+                    {analysisResults.some(r => r.faults.some(f => f.severity === 'Low')) && (
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">✓</span>
+                          </div>
+                          <h5 className="font-semibold text-green-800 text-sm">Low Priority Actions</h5>
                         </div>
-                        <h5 className="font-semibold text-green-800 text-sm">
-                          {analysisResults.some(r => r.faults.some(f => f.severity === 'Low')) 
-                            ? 'Low Priority & Preventive Maintenance' 
-                            : 'Preventive Maintenance'}
-                        </h5>
+                        <ul className="space-y-1 text-xs sm:text-sm text-green-700">
+                          {analysisResults
+                            .filter(r => r.faults.some(f => f.severity === 'Low'))
+                            .flatMap(r => r.recommendations.filter(rec => 
+                              rec.toLowerCase().includes('monthly') || 
+                              rec.toLowerCase().includes('quarterly') || 
+                              rec.toLowerCase().includes('routine') ||
+                              rec.toLowerCase().includes('clean') ||
+                              rec.toLowerCase().includes('document')
+                            ))
+                            .slice(0, 3)
+                            .map((rec, index) => (
+                              <li key={index}>• {rec}</li>
+                            ))}
+                        </ul>
                       </div>
-                      <ul className="space-y-1 text-xs sm:text-sm text-green-700">
-                        {analysisResults.some(r => r.faults.some(f => f.severity === 'Low')) ? (
-                          <>
-                            {analysisResults
-                              .filter(r => r.faults.some(f => f.severity === 'Low'))
-                              .flatMap(r => r.recommendations.filter(rec => 
-                                rec.toLowerCase().includes('monthly') || 
-                                rec.toLowerCase().includes('quarterly') || 
-                                rec.toLowerCase().includes('routine') ||
-                                rec.toLowerCase().includes('clean') ||
-                                rec.toLowerCase().includes('document')
-                              ))
-                              .slice(0, 3)
-                              .map((rec, index) => (
-                                <li key={index}>• {rec}</li>
-                              ))}
-                          </>
-                        ) : (
-                          <>
-                            <li>• Look for cracks or damage monthly</li>
-                            <li>• Check if panels are clean</li>
-                            <li>• Monitor power output numbers</li>
-                            <li>• Call professional every 6 months</li>
-                          </>
-                        )}
-                      </ul>
-                    </div>
+                    )}
                     
-                    {/* Performance Optimization - AI Adaptive */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">⚡</span>
-                        </div>
-                        <h5 className="font-semibold text-blue-800 text-sm">
-                          {analysisResults.some(r => r.faults.length > 0) 
-                            ? 'Performance Recovery & Optimization' 
-                            : 'Performance Optimization'}
-                        </h5>
-                      </div>
-                      <ul className="space-y-1 text-xs sm:text-sm text-blue-700">
-                        {analysisResults.some(r => r.faults.length > 0) ? (
-                          <>
-                            <li>• Install monitoring system to track repair effectiveness</li>
-                            <li>• Consider panel-level optimizers for damaged units</li>
-                            <li>• Monitor power output before and after repairs</li>
-                            <li>• Implement enhanced inspection schedule for affected panels</li>
-                          </>
-                        ) : (
-                          <>
-                            <li>• Install monitoring system for real-time performance tracking</li>
-                            <li>• Review shading patterns and trim vegetation as needed</li>
-                            <li>• Update system firmware and software regularly</li>
-                            <li>• Consider efficiency upgrades for older panels</li>
-                          </>
-                        )}
-                      </ul>
-                    </div>
+
                     
-                    {/* Cost-Benefit Analysis - AI Risk-Based */}
-                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">$</span>
-                        </div>
-                        <h5 className="font-semibold text-purple-800 text-sm">Risk-Based Cost Analysis</h5>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-purple-700">
-                        <div>
-                          <div className="font-medium mb-1">Immediate Impact:</div>
-                          <ul className="space-y-1">
-                            {analysisResults.some(r => r.faults.some(f => f.severity === 'Critical')) && (
-                              <li>• Critical issues: 25-40% power loss risk</li>
-                            )}
-                            {analysisResults.some(r => r.faults.some(f => f.severity === 'High')) && (
-                              <li>• High priority: 15-25% efficiency reduction</li>
-                            )}
-                            {analysisResults.some(r => r.faults.some(f => f.severity === 'Medium')) && (
-                              <li>• Medium priority: 5-15% output decrease</li>
-                            )}
-                            {analysisResults.every(r => r.faults.length === 0) && (
-                              <li>• No issues detected: Maintain 100% efficiency</li>
-                            )}
-                          </ul>
-                        </div>
-                        <div>
-                          <div className="font-medium mb-1">Action Priority:</div>
-                          <ul className="space-y-1">
-                            {analysisResults.some(r => r.faults.some(f => f.severity === 'Critical')) && (
-                              <li>• Critical: Immediate repair required</li>
-                            )}
-                            {analysisResults.some(r => r.faults.some(f => f.severity === 'High')) && (
-                              <li>• High: Schedule within 1-2 weeks</li>
-                            )}
-                            {analysisResults.some(r => r.faults.some(f => f.severity === 'Medium')) && (
-                              <li>• Medium: Plan within 30 days</li>
-                            )}
-                            {analysisResults.some(r => r.faults.some(f => f.severity === 'Low')) && (
-                              <li>• Low: Include in routine maintenance</li>
-                            )}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
+
                   </div>
                 </div>
 
