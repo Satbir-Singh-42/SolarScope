@@ -33,10 +33,16 @@ export default function ImageUpload({
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [isValidating, setIsValidating] = useState(false);
   const [showValidationCard, setShowValidationCard] = useState(false);
+  const [showThinkingAnimation, setShowThinkingAnimation] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
+      // Show preview immediately with thinking animation
+      setUploadedFile(file);
+      setPreview(URL.createObjectURL(file));
+      setShowThinkingAnimation(true);
+      
       setIsValidating(true);
       setValidationResult({
         isValid: false,
@@ -54,9 +60,14 @@ export default function ImageUpload({
         setShowValidationCard(true);
         
         if (result.isValid) {
-          setUploadedFile(file);
-          setPreview(URL.createObjectURL(file));
           onUpload(file);
+        } else {
+          // If validation fails, remove the preview
+          setUploadedFile(null);
+          if (preview) {
+            URL.revokeObjectURL(preview);
+          }
+          setPreview(null);
         }
 
         // Auto-hide validation card after 2.5 seconds
@@ -79,9 +90,10 @@ export default function ImageUpload({
         }, 2500);
       } finally {
         setIsValidating(false);
+        setShowThinkingAnimation(false);
       }
     }
-  }, [onUpload, validationType]);
+  }, [onUpload, validationType, preview]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -156,8 +168,25 @@ export default function ImageUpload({
               <img
                 src={preview || ''}
                 alt="Upload preview"
-                className="w-full h-48 sm:h-56 md:h-64 object-contain rounded-lg border border-gray-200 bg-gray-50"
+                className={`w-full h-48 sm:h-56 md:h-64 object-contain rounded-lg border border-gray-200 bg-gray-50 transition-all duration-300 ${
+                  showThinkingAnimation ? 'opacity-70' : 'opacity-100'
+                }`}
               />
+              
+              {/* Thinking Animation Overlay */}
+              {showThinkingAnimation && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 rounded-lg">
+                  <div className="bg-white bg-opacity-90 rounded-lg p-4 flex items-center space-x-3 shadow-lg">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                    <span className="text-sm text-gray-700 font-medium">Thinking...</span>
+                  </div>
+                </div>
+              )}
+              
               <button
                 onClick={removeFile}
                 className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors"
