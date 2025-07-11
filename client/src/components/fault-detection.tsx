@@ -737,28 +737,14 @@ ${result.recommendations.map(rec => `- ${rec}`).join('\n')}
                         <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                           <span className="text-white text-xs font-bold">✓</span>
                         </div>
-                        <h5 className="font-semibold text-green-800 text-sm">Preventive Maintenance Schedule</h5>
+                        <h5 className="font-semibold text-green-800 text-sm">Self-Check Maintenance</h5>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm text-green-700">
-                        <div>
-                          <div className="font-medium mb-1">Monthly Tasks:</div>
-                          <ul className="space-y-1">
-                            <li>• Visual inspection for obvious damage</li>
-                            <li>• Check electrical connections</li>
-                            <li>• Monitor performance metrics</li>
-                            <li>• Clean panels if needed</li>
-                          </ul>
-                        </div>
-                        <div>
-                          <div className="font-medium mb-1">Quarterly Tasks:</div>
-                          <ul className="space-y-1">
-                            <li>• Professional cleaning service</li>
-                            <li>• Inverter performance check</li>
-                            <li>• Wiring and mounting inspection</li>
-                            <li>• Performance comparison analysis</li>
-                          </ul>
-                        </div>
-                      </div>
+                      <ul className="space-y-1 text-xs sm:text-sm text-green-700">
+                        <li>• Look for cracks or damage monthly</li>
+                        <li>• Check if panels are clean</li>
+                        <li>• Monitor power output numbers</li>
+                        <li>• Call professional every 6 months</li>
+                      </ul>
                     </div>
                     
                     {/* Performance Optimization */}
