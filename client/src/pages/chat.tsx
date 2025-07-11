@@ -165,15 +165,16 @@ export default function Chat() {
         const response = await fetch('/api/health');
         if (response.ok) {
           const data = await response.json();
-          if (data.status === 'healthy') {
+          // Check if AI service is online
+          if (data.ai?.status === 'online') {
             setApiStatus('connected');
           } else {
-            // Server responds but unhealthy - still connected
-            setApiStatus('connected');
+            // AI service is offline (missing API key, etc.)
+            setApiStatus('error');
           }
         } else {
-          // Server error response - still connected to server
-          setApiStatus('connected');
+          // Server error response
+          setApiStatus('error');
         }
       } catch (error) {
         // Network failure - truly offline

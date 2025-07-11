@@ -147,12 +147,53 @@ const upload = multer({
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Health check endpoint for deployment monitoring
-  app.get("/api/health", (_req, res) => {
+  app.get("/api/health", async (_req, res) => {
+    let aiStatus = "offline";
+    let aiError = null;
+    
+    try {
+      const apiKey = process.env.GOOGLE_API_KEY;
+      
+      if (!apiKey || apiKey.trim() === "") {
+        aiError = "Google API key not configured";
+      } else {
+        // Test Google AI API connection with timeout
+        const { GoogleGenAI } = await import("@google/genai");
+        const ai = new GoogleGenAI({ apiKey });
+        
+        // Simple test with timeout to avoid hanging
+        const testPromise = ai.models.generateContent({
+          model: "gemini-2.0-flash",
+          contents: ["Hello"],
+        });
+        
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error("Connection timeout")), 5000)
+        );
+        
+        await Promise.race([testPromise, timeoutPromise]);
+        aiStatus = "online";
+      }
+    } catch (error: any) {
+      console.log("AI service check failed:", error.message);
+      if (error.message?.includes("API Key") || error.message?.includes("INVALID_ARGUMENT")) {
+        aiError = "Invalid or missing Google API key";
+      } else if (error.message?.includes("timeout")) {
+        aiError = "AI service timeout";
+      } else {
+        aiError = "AI service connection failed";
+      }
+    }
+    
     res.json({ 
-      status: "healthy", 
+      status: aiStatus === "online" ? "healthy" : "degraded", 
       timestamp: new Date().toISOString(),
       service: "SolarScope AI",
-      version: "1.0.0"
+      version: "1.0.0",
+      ai: {
+        status: aiStatus,
+        error: aiError
+      }
     });
   });
 
