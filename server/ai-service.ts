@@ -896,13 +896,39 @@ export async function analyzeFaultsWithAI(imagePath: string, originalFilename?: 
       - Recommendations should be actionable and specific
       - Format as proper sentences with clear punctuation
       
-      RECOMMENDATION GUIDELINES:
-      - Generate 3-4 specific recommendations based on the EXACT fault you detected
-      - Write in simple language that homeowners can understand
-      - For Critical faults (like extensive cracking): Focus on safety and immediate action
-      - For High faults: Focus on preventing further damage
-      - For Medium/Low faults: Focus on maintenance and monitoring
-      - Always include what the user can check themselves before calling professionals
+      RECOMMENDATION GUIDELINES - RISK-BASED PRIORITIZATION:
+      
+      FOR CRITICAL FAULTS (Safety hazards, >40% power loss, extensive damage):
+      - IMMEDIATE ACTION: "Turn off system immediately to prevent electrical hazards"
+      - SAFETY FIRST: "Do not touch damaged panels - call certified technician within 24 hours"
+      - EMERGENCY RESPONSE: "Document damage with photos for insurance claims"
+      - PREVENT ESCALATION: "Cover exposed areas temporarily if safe to do so"
+      
+      FOR HIGH FAULTS (15-40% power loss, significant damage):
+      - URGENT REPAIR: "Schedule professional inspection within 1-2 weeks"
+      - MONITOR CLOSELY: "Check daily for worsening conditions"
+      - PROTECT SYSTEM: "Avoid system operation during severe weather"
+      - POWER MANAGEMENT: "Expect 15-40% reduced energy output until repaired"
+      
+      FOR MEDIUM FAULTS (5-15% power loss, maintenance needed):
+      - PLANNED MAINTENANCE: "Schedule professional cleaning and inspection within 30 days"
+      - REGULAR MONITORING: "Check weekly for changes in damage or performance"
+      - PREVENTIVE CARE: "Clean panels monthly to prevent efficiency loss"
+      - PERFORMANCE TRACKING: "Monitor energy output for 5-15% reduction"
+      
+      FOR LOW FAULTS (Minor issues, <5% impact):
+      - ROUTINE MAINTENANCE: "Include in next scheduled maintenance visit"
+      - SELF-INSPECTION: "Check monthly during routine property inspection"
+      - PREVENTIVE CLEANING: "Clean panels quarterly to maintain efficiency"
+      - LONG-TERM MONITORING: "Document issue for future reference"
+      
+      ALWAYS PRIORITIZE BY RISK LEVEL:
+      1. Safety hazards (electrical, structural, fire risk)
+      2. Power loss prevention (efficiency impact)
+      3. Damage progression prevention
+      4. Routine maintenance optimization
+      
+      Generate 3-4 specific recommendations matching the severity level and exact fault type detected.
 
       ANALYSIS REQUIREMENTS:
       1. Systematic visual inspection of all visible components
@@ -1613,30 +1639,42 @@ function generateRecommendations(faults: any[]): string[] {
   const faultTypes = new Set(faults.map(f => f.type));
   const severities = new Set(faults.map(f => f.severity));
   
-  // Critical severity recommendations
+  // Risk-based recommendations prioritized by severity
   if (severities.has('Critical')) {
-    recommendations.push('Check panels yourself for visible damage');
-    recommendations.push('Turn off system if major cracks found');
-    recommendations.push('Call solar technician within 24 hours');
+    // IMMEDIATE SAFETY ACTIONS for Critical faults
+    recommendations.push('Turn off system immediately to prevent electrical hazards');
+    recommendations.push('Do not touch damaged panels - call certified technician within 24 hours');
+    recommendations.push('Document damage with photos for insurance claims');
+    
+    // Specific critical fault recommendations
+    if (faultTypes.has('Extensive Cracking') || faultTypes.has('Hail Damage')) {
+      recommendations.push('Cover exposed areas temporarily if safe to do so');
+    }
+  } else if (severities.has('High')) {
+    // URGENT REPAIR for High severity faults
+    recommendations.push('Schedule professional inspection within 1-2 weeks');
+    recommendations.push('Check daily for worsening conditions');
+    recommendations.push('Expect 15-40% reduced energy output until repaired');
+    recommendations.push('Avoid system operation during severe weather');
+  } else if (severities.has('Medium')) {
+    // PLANNED MAINTENANCE for Medium severity faults
+    recommendations.push('Schedule professional cleaning and inspection within 30 days');
+    recommendations.push('Check weekly for changes in damage or performance');
+    recommendations.push('Monitor energy output for 5-15% reduction');
+    recommendations.push('Clean panels monthly to prevent efficiency loss');
+  } else if (severities.has('Low')) {
+    // ROUTINE MAINTENANCE for Low severity faults
+    recommendations.push('Include in next scheduled maintenance visit');
+    recommendations.push('Check monthly during routine property inspection');
+    recommendations.push('Clean panels quarterly to maintain efficiency');
+    recommendations.push('Document issue for future reference');
   }
   
-  // High severity recommendations
-  if (severities.has('High')) {
-    recommendations.push('Schedule professional check within 2 weeks');
-    recommendations.push('Monitor your power output daily');
-  }
-  
-  // General recommendations
-  if (faults.length > 0) {
-    recommendations.push('Look for damage monthly');
-    recommendations.push('Clean panels if dirty');
-    recommendations.push('Take photos of any issues');
-  }
-  
+  // Perfect condition recommendations
   if (faults.length === 0) {
     recommendations.push('Panel shows excellent condition - continue current maintenance practices');
     recommendations.push('Schedule next comprehensive inspection in 6 months');
-    recommendations.push('Maintain cleaning schedule to preserve optimal performance');
+    recommendations.push('Maintain quarterly cleaning schedule for optimal performance');
   }
   
   return recommendations;
