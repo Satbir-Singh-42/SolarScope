@@ -594,7 +594,7 @@ export default function About() {
           <div className="text-center">
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4">
               <div className="flex items-center space-x-2">
-                <span className="text-white font-medium">Made by Satbir Singh</span>
+                <span className="text-white font-medium">Made by CodeTyrans</span>
               </div>
               <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-4 text-sm">
                 <a 
