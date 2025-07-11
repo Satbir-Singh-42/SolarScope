@@ -39,7 +39,7 @@ const solarNewsData = {
       readTime: 6,
       trending: true,
       tags: ["perovskite", "efficiency", "solar cells", "technology"],
-      imageUrl: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=800&q=80",
       source: "Solar Industry Magazine"
     },
     {
@@ -52,7 +52,7 @@ const solarNewsData = {
       readTime: 5,
       trending: true,
       tags: ["AI", "optimization", "smart solar", "efficiency"],
-      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80",
       source: "Renewable Energy Today"
     },
     {
@@ -65,7 +65,7 @@ const solarNewsData = {
       readTime: 4,
       trending: true,
       tags: ["cost reduction", "installation", "market", "accessibility"],
-      imageUrl: "https://images.unsplash.com/photo-1497440001374-f26997328c1b?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "https://images.unsplash.com/photo-1594736797933-d0eb9cd3ba33?auto=format&fit=crop&w=800&q=80",
       source: "Energy Market Report"
     },
     {
@@ -104,7 +104,7 @@ const solarNewsData = {
       readTime: 5,
       trending: false,
       tags: ["recycling", "sustainability", "circular economy", "environment"],
-      imageUrl: "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "https://images.unsplash.com/photo-1569163139845-de523ea2ad55?auto=format&fit=crop&w=800&q=80",
       source: "Environmental Solar Review"
     },
     {
@@ -330,38 +330,42 @@ export default function Articles() {
       {/* Loading indicator below navbar */}
       {isRefreshing && (
         <div className="fixed top-16 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm">
-          <div className="flex items-center justify-center py-4 px-4">
-            <div className="relative w-8 h-8 mr-3">
-              {/* Downloading circle animation */}
-              <svg className="w-8 h-8 transform -rotate-90" viewBox="0 0 32 32">
-                <circle
-                  cx="16"
-                  cy="16"
-                  r="14"
-                  stroke="#e5e7eb"
-                  strokeWidth="3"
-                  fill="none"
-                />
-                <circle
-                  cx="16"
-                  cy="16"
-                  r="14"
-                  stroke="#2563eb"
-                  strokeWidth="3"
-                  fill="none"
-                  strokeDasharray="88"
-                  strokeDashoffset="0"
-                  className="animate-spin"
-                  style={{
-                    animation: 'download-progress 1.5s ease-in-out infinite'
-                  }}
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+          <div className="flex flex-col items-center justify-center py-4 px-4">
+            {/* Custom loading spinner similar to attached image */}
+            <div className="relative w-10 h-10 mb-2">
+              <div className="absolute inset-0">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-1 h-3 bg-gray-300 rounded-full animate-pulse"
+                    style={{
+                      top: '2px',
+                      left: '50%',
+                      transformOrigin: '50% 18px',
+                      transform: `translateX(-50%) rotate(${i * 30}deg)`,
+                      animationDelay: `${i * 0.1}s`,
+                      animationDuration: '1.2s'
+                    }}
+                  />
+                ))}
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div
+                    key={`dark-${i}`}
+                    className="absolute w-1 h-3 bg-gray-600 rounded-full animate-pulse"
+                    style={{
+                      top: '2px',
+                      left: '50%',
+                      transformOrigin: '50% 18px',
+                      transform: `translateX(-50%) rotate(${i * 30}deg)`,
+                      animationDelay: `${i * 0.1 + 0.6}s`,
+                      animationDuration: '1.2s',
+                      opacity: i < 3 ? 1 : 0
+                    }}
+                  />
+                ))}
               </div>
             </div>
-            <span className="text-sm text-gray-600 font-medium">Refreshing articles...</span>
+            <span className="text-sm text-gray-600 font-medium">LOADING...</span>
           </div>
         </div>
       )}
@@ -370,45 +374,32 @@ export default function Articles() {
       {pullRefreshState.isPulling && !isRefreshing && (
         <div className="fixed top-16 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm">
           <div 
-            className="flex items-center justify-center transition-all duration-200"
+            className="flex flex-col items-center justify-center transition-all duration-200"
             style={{ 
               height: `${Math.min(pullRefreshState.pullDistance, 60)}px`,
               opacity: pullRefreshState.pullDistance / 80
             }}
           >
-            <div className="flex items-center space-x-2">
-              <div className="relative w-6 h-6">
-                <svg className="w-6 h-6 transform -rotate-90" viewBox="0 0 24 24">
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="#e5e7eb"
-                    strokeWidth="2"
-                    fill="none"
+            <div className="relative w-8 h-8 mb-1">
+              <div className="absolute inset-0">
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-0.5 h-2 bg-gray-300 rounded-full"
+                    style={{
+                      top: '2px',
+                      left: '50%',
+                      transformOrigin: '50% 14px',
+                      transform: `translateX(-50%) rotate(${i * 30}deg)`,
+                      opacity: pullRefreshState.triggered ? (i < 3 ? 0.8 : 0.3) : 0.5
+                    }}
                   />
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="#2563eb"
-                    strokeWidth="2"
-                    fill="none"
-                    strokeDasharray="63"
-                    strokeDashoffset={63 - (pullRefreshState.pullDistance / 80) * 63}
-                    className="transition-all duration-200"
-                  />
-                </svg>
-                {pullRefreshState.triggered && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></div>
-                  </div>
-                )}
+                ))}
               </div>
-              <span className="text-sm text-gray-600 font-medium">
-                {pullRefreshState.triggered ? 'Release to refresh' : 'Pull to refresh'}
-              </span>
             </div>
+            <span className="text-xs text-gray-600 font-medium">
+              {pullRefreshState.triggered ? 'Release to refresh' : 'Pull to refresh'}
+            </span>
           </div>
         </div>
       )}
