@@ -322,6 +322,7 @@ Changelog:
 - July 11, 2025. **LOADING ANIMATIONS ENHANCED**: Added downloading circle animation for refresh states with instant response and optimized image loading with crossOrigin support
 - July 11, 2025. **CUSTOM LOADING SPINNER IMPLEMENTED**: Replaced generic loading with custom radial spinner matching provided design with "LOADING..." text and smooth animations
 - July 11, 2025. **CATEGORY-SPECIFIC IMAGES ADDED**: Each of the 4 article categories now has distinct, high-quality Unsplash images - technology (solar panels), market (installations), environment (green energy), policy (government buildings)
+- July 11, 2025. **ASSETS LOCALIZED**: Downloaded and saved all article images to `/client/public/assets/articles/` for future use, reducing external dependencies and improving performance
 ```
 
 ## User Preferences

@@ -39,7 +39,7 @@ const solarNewsData = {
       readTime: 6,
       trending: true,
       tags: ["perovskite", "efficiency", "solar cells", "technology"],
-      imageUrl: "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/assets/articles/technology-1.jpg",
       source: "Solar Industry Magazine"
     },
     {
@@ -52,7 +52,7 @@ const solarNewsData = {
       readTime: 5,
       trending: true,
       tags: ["AI", "optimization", "smart solar", "efficiency"],
-      imageUrl: "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/assets/articles/technology-2.jpg",
       source: "Renewable Energy Today"
     },
     {
@@ -65,7 +65,7 @@ const solarNewsData = {
       readTime: 4,
       trending: true,
       tags: ["cost reduction", "installation", "market", "accessibility"],
-      imageUrl: "https://images.unsplash.com/photo-1594736797933-d0eb9cd3ba33?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/assets/articles/market-1.jpg",
       source: "Energy Market Report"
     },
     {
@@ -78,7 +78,7 @@ const solarNewsData = {
       readTime: 5,
       trending: false,
       tags: ["battery storage", "lithium", "backup power", "reliability"],
-      imageUrl: "https://images.unsplash.com/photo-1625119233886-02e75fc17b6c?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/assets/articles/technology-3.jpg",
       source: "Energy Storage News"
     },
     {
@@ -91,7 +91,7 @@ const solarNewsData = {
       readTime: 4,
       trending: false,
       tags: ["tax credits", "government", "incentives", "policy"],
-      imageUrl: "https://images.unsplash.com/photo-1577962917302-cd874c4e31d2?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/assets/articles/policy-1.jpg",
       source: "Policy Energy Review"
     },
     {
@@ -104,7 +104,7 @@ const solarNewsData = {
       readTime: 5,
       trending: false,
       tags: ["recycling", "sustainability", "circular economy", "environment"],
-      imageUrl: "https://images.unsplash.com/photo-1569163139845-de523ea2ad55?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/assets/articles/environment-1.jpg",
       source: "Environmental Solar Review"
     },
     {
@@ -117,7 +117,7 @@ const solarNewsData = {
       readTime: 6,
       trending: false,
       tags: ["transparent solar", "building integration", "quantum dots", "architecture"],
-      imageUrl: "https://images.unsplash.com/photo-1542397284385-6010376c5337?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/assets/articles/technology-4.jpg",
       source: "Building Technology Today"
     },
     {
@@ -130,7 +130,7 @@ const solarNewsData = {
       readTime: 5,
       trending: false,
       tags: ["community solar", "energy access", "shared solar", "renewable energy"],
-      imageUrl: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=800&q=80",
+      imageUrl: "/assets/articles/market-2.jpg",
       source: "Community Energy Report"
     }
   ],
