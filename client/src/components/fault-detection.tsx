@@ -892,7 +892,7 @@ ${result.recommendations.map(rec => `- ${rec}`).join('\n')}
                       </div>
                     </Button>
                     
-                    <Button variant="outline" className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 hover:shadow-lg hover:bg-white text-sm h-11 shadow-md text-black" onClick={exportToJson}>
+                    <Button variant="outline" className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 hover:shadow-lg hover:bg-white text-sm h-11 shadow-md text-black hover:text-black" onClick={exportToJson}>
                       <Share className="mr-1 sm:mr-2" size={14} />
                       <div className="text-left">
                         <div className="font-medium">JSON Data</div>
@@ -902,7 +902,7 @@ ${result.recommendations.map(rec => `- ${rec}`).join('\n')}
 
                     <Button 
                       variant="outline" 
-                      className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200 hover:shadow-lg hover:bg-white text-sm h-11 shadow-md text-black"
+                      className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200 hover:shadow-lg hover:bg-white text-sm h-11 shadow-md text-black hover:text-black"
                       onClick={() => {
                         const summary = `
 Solar Panel Analysis Summary
