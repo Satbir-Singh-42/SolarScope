@@ -347,3 +347,16 @@ body::-webkit-scrollbar, html::-webkit-scrollbar {
     box-shadow: 0 4px 8px rgba(0,0,0,0.12), 0 12px 24px rgba(0,0,0,0.15);
   }
 }
+
+/* Download progress circle animation */
+@keyframes download-progress {
+  0% {
+    stroke-dashoffset: 88;
+  }
+  50% {
+    stroke-dashoffset: 22;
+  }
+  100% {
+    stroke-dashoffset: 88;
+  }
+}

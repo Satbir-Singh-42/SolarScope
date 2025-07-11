@@ -293,9 +293,6 @@ export default function Articles() {
     setLastRefreshTime(Date.now());
     
     try {
-      // Simulate network delay for realistic experience
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
       // Try to fetch from API first, then fall back to static data
       const response = await fetch('/api/solar-news');
       if (response.ok) {
@@ -333,12 +330,38 @@ export default function Articles() {
       {/* Loading indicator below navbar */}
       {isRefreshing && (
         <div className="fixed top-16 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm">
-          <div className="flex items-center justify-center py-3 px-4">
-            <RefreshCw className="w-5 h-5 text-primary animate-spin mr-2" />
+          <div className="flex items-center justify-center py-4 px-4">
+            <div className="relative w-8 h-8 mr-3">
+              {/* Downloading circle animation */}
+              <svg className="w-8 h-8 transform -rotate-90" viewBox="0 0 32 32">
+                <circle
+                  cx="16"
+                  cy="16"
+                  r="14"
+                  stroke="#e5e7eb"
+                  strokeWidth="3"
+                  fill="none"
+                />
+                <circle
+                  cx="16"
+                  cy="16"
+                  r="14"
+                  stroke="#2563eb"
+                  strokeWidth="3"
+                  fill="none"
+                  strokeDasharray="88"
+                  strokeDashoffset="0"
+                  className="animate-spin"
+                  style={{
+                    animation: 'download-progress 1.5s ease-in-out infinite'
+                  }}
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              </div>
+            </div>
             <span className="text-sm text-gray-600 font-medium">Refreshing articles...</span>
-          </div>
-          <div className="h-1 bg-gray-100">
-            <div className="h-full bg-gradient-to-r from-primary to-blue-600 animate-pulse"></div>
           </div>
         </div>
       )}
@@ -354,24 +377,39 @@ export default function Articles() {
             }}
           >
             <div className="flex items-center space-x-2">
-              <RefreshCw 
-                className={`w-5 h-5 text-primary transition-transform duration-200 ${
-                  pullRefreshState.triggered ? 'animate-spin' : ''
-                }`}
-                style={{ 
-                  transform: `rotate(${pullRefreshState.pullDistance * 3}deg)` 
-                }}
-              />
+              <div className="relative w-6 h-6">
+                <svg className="w-6 h-6 transform -rotate-90" viewBox="0 0 24 24">
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="#e5e7eb"
+                    strokeWidth="2"
+                    fill="none"
+                  />
+                  <circle
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="#2563eb"
+                    strokeWidth="2"
+                    fill="none"
+                    strokeDasharray="63"
+                    strokeDashoffset={63 - (pullRefreshState.pullDistance / 80) * 63}
+                    className="transition-all duration-200"
+                  />
+                </svg>
+                {pullRefreshState.triggered && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></div>
+                  </div>
+                )}
+              </div>
               <span className="text-sm text-gray-600 font-medium">
                 {pullRefreshState.triggered ? 'Release to refresh' : 'Pull to refresh'}
               </span>
             </div>
           </div>
-          {pullRefreshState.triggered && (
-            <div className="h-1 bg-gray-100">
-              <div className="h-full bg-gradient-to-r from-primary to-blue-600 w-full"></div>
-            </div>
-          )}
         </div>
       )}
       
@@ -542,52 +580,12 @@ export default function Articles() {
                               src={article.imageUrl} 
                               alt={article.title}
                               className="w-full h-full object-cover"
-                              onError={(e) => {
-                                // Fallback to category icon if image fails to load
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                                const parent = target.parentElement;
-                                if (parent) {
-                                  const fallbackDiv = document.createElement('div');
-                                  fallbackDiv.className = 'w-full h-full flex items-center justify-center';
-                                  
-                                  if (article.category === 'technology') {
-                                    fallbackDiv.className += ' bg-gradient-to-br from-blue-500 to-purple-600';
-                                    fallbackDiv.innerHTML = '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>';
-                                  } else if (article.category === 'market') {
-                                    fallbackDiv.className += ' bg-gradient-to-br from-green-500 to-emerald-600';
-                                    fallbackDiv.innerHTML = '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path></svg>';
-                                  } else if (article.category === 'environment') {
-                                    fallbackDiv.className += ' bg-gradient-to-br from-emerald-500 to-green-600';
-                                    fallbackDiv.innerHTML = '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>';
-                                  } else {
-                                    fallbackDiv.className += ' bg-gradient-to-br from-purple-500 to-blue-600';
-                                    fallbackDiv.innerHTML = '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
-                                  }
-                                  
-                                  parent.appendChild(fallbackDiv);
-                                }
-                              }}
+                              loading="lazy"
+                              crossOrigin="anonymous"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              {article.category === 'technology' ? (
-                                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                                  <Zap className="w-8 h-8 text-white" />
-                                </div>
-                              ) : article.category === 'market' ? (
-                                <div className="w-full h-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                                  <DollarSign className="w-8 h-8 text-white" />
-                                </div>
-                              ) : article.category === 'environment' ? (
-                                <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
-                                  <Leaf className="w-8 h-8 text-white" />
-                                </div>
-                              ) : (
-                                <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
-                                  <Calendar className="w-8 h-8 text-white" />
-                                </div>
-                              )}
+                            <div className="w-full h-full bg-gradient-to-br from-gray-400 to-gray-600 flex items-center justify-center">
+                              <Calendar className="w-8 h-8 text-white" />
                             </div>
                           )}
                         </div>
@@ -663,6 +661,8 @@ export default function Articles() {
                       src={selectedArticle.imageUrl} 
                       alt={selectedArticle.title}
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      crossOrigin="anonymous"
                     />
                   </div>
                 )}
