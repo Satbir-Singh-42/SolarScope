@@ -884,7 +884,7 @@ ${result.recommendations.map(rec => `- ${rec}`).join('\n')}
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-                    <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm h-11 shadow-md" onClick={exportToText}>
+                    <Button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-sm h-11 shadow-md hover:shadow-lg transition-all duration-200 hover:scale-105" onClick={exportToText}>
                       <Download className="mr-1 sm:mr-2" size={14} />
                       <div className="text-left">
                         <div className="font-medium">TXT Report</div>
@@ -892,7 +892,7 @@ ${result.recommendations.map(rec => `- ${rec}`).join('\n')}
                       </div>
                     </Button>
                     
-                    <Button variant="outline" className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 hover:bg-green-100 text-sm h-11 shadow-md" onClick={exportToJson}>
+                    <Button variant="outline" className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200 hover:from-green-100 hover:to-emerald-100 hover:border-green-300 hover:shadow-lg text-sm h-11 shadow-md transition-all duration-200 hover:scale-105" onClick={exportToJson}>
                       <Share className="mr-1 sm:mr-2" size={14} />
                       <div className="text-left">
                         <div className="font-medium">JSON Data</div>
@@ -902,7 +902,7 @@ ${result.recommendations.map(rec => `- ${rec}`).join('\n')}
 
                     <Button 
                       variant="outline" 
-                      className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200 hover:bg-purple-100 text-sm h-11 shadow-md"
+                      className="bg-gradient-to-r from-purple-50 to-indigo-50 border-purple-200 hover:from-purple-100 hover:to-indigo-100 hover:border-purple-300 hover:shadow-lg text-sm h-11 shadow-md transition-all duration-200 hover:scale-105"
                       onClick={() => {
                         const summary = `
 Solar Panel Analysis Summary
@@ -958,7 +958,7 @@ Next Steps:
 
                     <Button 
                       variant="outline" 
-                      className="bg-gradient-to-r from-red-50 to-pink-50 border-red-200 hover:bg-red-100 text-red-600 hover:text-red-700 text-sm h-11 shadow-md" 
+                      className="bg-gradient-to-r from-red-50 to-pink-50 border-red-200 hover:from-red-100 hover:to-pink-100 hover:border-red-300 hover:shadow-lg text-red-600 hover:text-red-700 text-sm h-11 shadow-md transition-all duration-200 hover:scale-105" 
                       onClick={clearAllResults}
                     >
                       <Trash2 className="mr-1 sm:mr-2" size={14} />
