@@ -317,6 +317,7 @@ Changelog:
 - July 11, 2025. **GOOGLE API KEY INTEGRATED**: Added Google Gemini AI API key, enabling real AI-powered analysis for installation planning, fault detection, and chat assistance
 - July 11, 2025. **MIGRATION FINALIZED**: Completed full migration from Replit Agent to Replit environment with Google API integration and all core features operational
 - July 11, 2025. **MAINTENANCE RECOMMENDATIONS CLEANED**: Removed all fake non-AI generated maintenance plans, keeping only genuine AI-generated recommendations based on actual fault detection results
+- July 11, 2025. **ARTICLES ENHANCED WITH REAL IMAGES**: Added authentic Unsplash images to all articles with proper fallback handling and enhanced visual presentation in both card view and modal display
 ```
 
 ## User Preferences

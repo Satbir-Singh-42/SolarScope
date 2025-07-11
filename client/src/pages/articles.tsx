@@ -39,6 +39,7 @@ const solarNewsData = {
       readTime: 6,
       trending: true,
       tags: ["perovskite", "efficiency", "solar cells", "technology"],
+      imageUrl: "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=800&q=80",
       source: "Solar Industry Magazine"
     },
     {
@@ -51,6 +52,7 @@ const solarNewsData = {
       readTime: 5,
       trending: true,
       tags: ["AI", "optimization", "smart solar", "efficiency"],
+      imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80",
       source: "Renewable Energy Today"
     },
     {
@@ -63,6 +65,7 @@ const solarNewsData = {
       readTime: 4,
       trending: true,
       tags: ["cost reduction", "installation", "market", "accessibility"],
+      imageUrl: "https://images.unsplash.com/photo-1497440001374-f26997328c1b?auto=format&fit=crop&w=800&q=80",
       source: "Energy Market Report"
     },
     {
@@ -75,6 +78,7 @@ const solarNewsData = {
       readTime: 5,
       trending: false,
       tags: ["battery storage", "lithium", "backup power", "reliability"],
+      imageUrl: "https://images.unsplash.com/photo-1625119233886-02e75fc17b6c?auto=format&fit=crop&w=800&q=80",
       source: "Energy Storage News"
     },
     {
@@ -87,6 +91,7 @@ const solarNewsData = {
       readTime: 4,
       trending: false,
       tags: ["tax credits", "government", "incentives", "policy"],
+      imageUrl: "https://images.unsplash.com/photo-1577962917302-cd874c4e31d2?auto=format&fit=crop&w=800&q=80",
       source: "Policy Energy Review"
     },
     {
@@ -99,6 +104,7 @@ const solarNewsData = {
       readTime: 5,
       trending: false,
       tags: ["recycling", "sustainability", "circular economy", "environment"],
+      imageUrl: "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?auto=format&fit=crop&w=800&q=80",
       source: "Environmental Solar Review"
     },
     {
@@ -111,6 +117,7 @@ const solarNewsData = {
       readTime: 6,
       trending: false,
       tags: ["transparent solar", "building integration", "quantum dots", "architecture"],
+      imageUrl: "https://images.unsplash.com/photo-1542397284385-6010376c5337?auto=format&fit=crop&w=800&q=80",
       source: "Building Technology Today"
     },
     {
@@ -123,6 +130,7 @@ const solarNewsData = {
       readTime: 5,
       trending: false,
       tags: ["community solar", "energy access", "shared solar", "renewable energy"],
+      imageUrl: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=800&q=80",
       source: "Community Energy Report"
     }
   ],
@@ -428,24 +436,60 @@ export default function Articles() {
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start space-x-4">
-                      {/* Category Icon with Photo */}
+                      {/* Article Image */}
                       <div className="flex-shrink-0">
-                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                          {article.category === 'technology' ? (
-                            <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                              <Zap className="w-8 h-8 text-white" />
-                            </div>
-                          ) : article.category === 'market' ? (
-                            <div className="w-full h-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                              <DollarSign className="w-8 h-8 text-white" />
-                            </div>
-                          ) : article.category === 'environment' ? (
-                            <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
-                              <Leaf className="w-8 h-8 text-white" />
-                            </div>
+                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+                          {article.imageUrl ? (
+                            <img 
+                              src={article.imageUrl} 
+                              alt={article.title}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                // Fallback to category icon if image fails to load
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                const parent = target.parentElement;
+                                if (parent) {
+                                  const fallbackDiv = document.createElement('div');
+                                  fallbackDiv.className = 'w-full h-full flex items-center justify-center';
+                                  
+                                  if (article.category === 'technology') {
+                                    fallbackDiv.className += ' bg-gradient-to-br from-blue-500 to-purple-600';
+                                    fallbackDiv.innerHTML = '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>';
+                                  } else if (article.category === 'market') {
+                                    fallbackDiv.className += ' bg-gradient-to-br from-green-500 to-emerald-600';
+                                    fallbackDiv.innerHTML = '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path></svg>';
+                                  } else if (article.category === 'environment') {
+                                    fallbackDiv.className += ' bg-gradient-to-br from-emerald-500 to-green-600';
+                                    fallbackDiv.innerHTML = '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>';
+                                  } else {
+                                    fallbackDiv.className += ' bg-gradient-to-br from-purple-500 to-blue-600';
+                                    fallbackDiv.innerHTML = '<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
+                                  }
+                                  
+                                  parent.appendChild(fallbackDiv);
+                                }
+                              }}
+                            />
                           ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
-                              <Calendar className="w-8 h-8 text-white" />
+                            <div className="w-full h-full flex items-center justify-center">
+                              {article.category === 'technology' ? (
+                                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                  <Zap className="w-8 h-8 text-white" />
+                                </div>
+                              ) : article.category === 'market' ? (
+                                <div className="w-full h-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                                  <DollarSign className="w-8 h-8 text-white" />
+                                </div>
+                              ) : article.category === 'environment' ? (
+                                <div className="w-full h-full bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
+                                  <Leaf className="w-8 h-8 text-white" />
+                                </div>
+                              ) : (
+                                <div className="w-full h-full bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center">
+                                  <Calendar className="w-8 h-8 text-white" />
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
@@ -514,6 +558,17 @@ export default function Articles() {
           <ScrollArea className="h-[70vh] pr-4">
             {selectedArticle && (
               <div className="space-y-6">
+                {/* Featured Image */}
+                {selectedArticle.imageUrl && (
+                  <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100">
+                    <img 
+                      src={selectedArticle.imageUrl} 
+                      alt={selectedArticle.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                
                 <div className="flex items-center gap-4 text-sm text-gray-600">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">
