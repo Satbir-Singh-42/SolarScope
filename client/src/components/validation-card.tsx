@@ -64,17 +64,17 @@ export default function ValidationCard({ type, title, description, className, on
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -20, scale: 0.95 }}
+      initial={{ opacity: 0, x: -100, scale: 0.95 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={{ opacity: 0, x: -100, scale: 0.95 }}
       transition={{ 
-        duration: 0.4,
+        duration: 0.5,
         type: "spring",
-        stiffness: 400,
-        damping: 25
+        stiffness: 300,
+        damping: 30
       }}
       className={cn(
-        "relative rounded-lg border-2 p-4 max-w-sm mx-auto",
+        "fixed top-4 left-4 z-50 rounded-lg border-2 p-4 max-w-sm shadow-xl",
         getStyles(),
         className
       )}

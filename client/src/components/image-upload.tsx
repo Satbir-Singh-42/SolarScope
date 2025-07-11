@@ -3,6 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CloudUpload, X, Zap } from "lucide-react";
+import { AnimatePresence } from "framer-motion";
 import ValidationCard from "./validation-card";
 import { validateImageForInstallation, validateImageForFaultDetection, ValidationResult } from "@/lib/image-validation";
 
@@ -31,6 +32,7 @@ export default function ImageUpload({
   const [preview, setPreview] = useState<string | null>(null);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [isValidating, setIsValidating] = useState(false);
+  const [showValidationCard, setShowValidationCard] = useState(false);
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -49,12 +51,18 @@ export default function ImageUpload({
           : await validateImageForFaultDetection(file);
 
         setValidationResult(result);
+        setShowValidationCard(true);
         
         if (result.isValid) {
           setUploadedFile(file);
           setPreview(URL.createObjectURL(file));
           onUpload(file);
         }
+
+        // Auto-hide validation card after 2.5 seconds
+        setTimeout(() => {
+          setShowValidationCard(false);
+        }, 2500);
       } catch (error) {
         console.error('Validation error:', error);
         setValidationResult({
@@ -63,6 +71,12 @@ export default function ImageUpload({
           title: "Validation Failed",
           description: "Unable to validate the image. Please try again."
         });
+        setShowValidationCard(true);
+        
+        // Auto-hide validation card after 2.5 seconds
+        setTimeout(() => {
+          setShowValidationCard(false);
+        }, 2500);
       } finally {
         setIsValidating(false);
       }
@@ -87,21 +101,22 @@ export default function ImageUpload({
   };
 
   return (
-    <Card className="shadow-material">
-      <CardContent className="p-4 sm:p-6 md:p-8">
-        <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 text-primary-custom">{title}</h3>
-        
-        {/* Validation Card */}
-        {validationResult && (
-          <div className="mb-4 sm:mb-6">
-            <ValidationCard
-              type={validationResult.type}
-              title={validationResult.title}
-              description={validationResult.description}
-              className="animate-in slide-in-from-top-2 duration-300"
-            />
-          </div>
+    <>
+      {/* Validation Card - Fixed position overlay */}
+      <AnimatePresence>
+        {showValidationCard && validationResult && (
+          <ValidationCard
+            type={validationResult.type}
+            title={validationResult.title}
+            description={validationResult.description}
+            onClose={() => setShowValidationCard(false)}
+          />
         )}
+      </AnimatePresence>
+
+      <Card className="shadow-material">
+        <CardContent className="p-4 sm:p-6 md:p-8">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 text-primary-custom">{title}</h3>
         
         {!uploadedFile ? (
           <div
@@ -179,5 +194,6 @@ export default function ImageUpload({
         <p className="text-xs sm:text-sm text-secondary-custom mt-4 px-2">{description}</p>
       </CardContent>
     </Card>
+    </>
   );
 }
