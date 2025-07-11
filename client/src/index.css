@@ -110,6 +110,55 @@
   }
 }
 
+/* Toast animations */
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Toast styling enhancements */
+.toast-slide-in {
+  animation: toastSlideIn 0.3s ease-out;
+}
+
+.toast-slide-out {
+  animation: toastSlideOut 0.3s ease-in;
+}
+
+/* Custom toast shadows */
+.toast-shadow-success {
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.toast-shadow-error {
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.toast-shadow-warning {
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.toast-shadow-info {
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
 /* Hide scrollbar for chat messages */
 .chat-scroll-area [data-radix-scroll-area-viewport] {
   scrollbar-width: none; /* Firefox */

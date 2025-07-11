@@ -26,6 +26,20 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+// Health check function to verify backend connectivity
+export async function checkBackendHealth(): Promise<boolean> {
+  try {
+    const res = await fetch('/api/health', {
+      method: 'GET',
+      credentials: 'include',
+    });
+    return res.ok;
+  } catch (error) {
+    console.error('Backend health check failed:', error);
+    return false;
+  }
+}
+
 export async function apiRequest(
   method: string,
   url: string,
@@ -44,15 +58,28 @@ export async function apiRequest(
     }
   }
 
-  const res = await fetch(url, {
-    method,
-    headers,
-    body,
-    credentials: "include",
-  });
+  try {
+    const res = await fetch(url, {
+      method,
+      headers,
+      body,
+      credentials: "include",
+    });
 
-  await throwIfResNotOk(res);
-  return res;
+    await throwIfResNotOk(res);
+    return res;
+  } catch (error) {
+    // Enhanced error handling for backend connectivity
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      throw new Error('Backend not connected properly. Please check if the server is running.');
+    }
+    
+    if (error instanceof Error && error.message.includes('NetworkError')) {
+      throw new Error('Network connection failed. Please check your internet connection and server status.');
+    }
+    
+    throw error;
+  }
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";

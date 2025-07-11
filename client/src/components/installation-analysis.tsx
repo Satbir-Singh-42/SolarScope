@@ -11,7 +11,7 @@ import { CheckCircle, Download, Share, Settings, FileText, Home, Ruler, ChevronD
 
 import ImageUpload from "./image-upload";
 import AnalysisOverlay from "./analysis-overlay";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, checkBackendHealth } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { InstallationResult, RoofInput } from "@shared/schema";
 
@@ -42,6 +42,7 @@ export default function InstallationAnalysis() {
       toast({
         title: "Image Uploaded",
         description: "Click 'Start AI Analysis' to analyze your rooftop image.",
+        variant: "success",
       });
     },
     onError: (error) => {
@@ -94,6 +95,7 @@ export default function InstallationAnalysis() {
       toast({
         title: "Analysis Complete",
         description: "Your rooftop analysis has been completed successfully.",
+        variant: "success",
       });
     },
     onError: (error) => {
@@ -118,9 +120,23 @@ export default function InstallationAnalysis() {
         } else if (errorText.includes('overloaded') || errorText.includes('503') || errorText.includes('unavailable')) {
           errorTitle = "AI Service Temporarily Unavailable";
           errorMessage = "The AI analysis service is currently overloaded. Please wait a few minutes and try again. If the issue persists, try a different image or contact support.";
+          
+          // Use warning variant for service unavailability
+          toast({
+            title: errorTitle,
+            description: errorMessage,
+            variant: "warning",
+          });
+          return;
         } else if (errorText.includes('network') || errorText.includes('timeout')) {
           errorTitle = "Connection Error";
           errorMessage = "Network connection failed. Please check your internet connection and try again.";
+        } else if (errorText.includes('backend not connected') || errorText.includes('server not available')) {
+          errorTitle = "Backend Connection Error";
+          errorMessage = "The backend server is not connected properly. Please check the server status and try again.";
+        } else if (errorText.includes('fetch') || errorText.includes('cors') || errorText.includes('refused')) {
+          errorTitle = "Backend Connection Error";
+          errorMessage = "Cannot connect to the backend server. Please ensure the server is running and try again.";
         } else {
           errorMessage = error.message;
         }
@@ -139,7 +155,18 @@ export default function InstallationAnalysis() {
     setImageUrl(URL.createObjectURL(file));
   };
 
-  const handleAnalyze = (file: File) => {
+  const handleAnalyze = async (file: File) => {
+    // Check backend health before analysis
+    const isHealthy = await checkBackendHealth();
+    if (!isHealthy) {
+      toast({
+        title: "Backend Connection Error",
+        description: "Cannot connect to the backend server. Please ensure the server is running and try again.",
+        variant: "warning",
+      });
+      return;
+    }
+    
     analysisMutation.mutate(file);
   };
 

@@ -7,7 +7,7 @@ import { AlertTriangle, CheckCircle, Eye, Download, Calendar, Share, FileText, X
 
 import ImageUpload from "./image-upload";
 import AnalysisOverlay from "./analysis-overlay";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, checkBackendHealth } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { FaultResult } from "@shared/schema";
 
@@ -55,6 +55,7 @@ export default function FaultDetection() {
       toast({
         title: "Fault Detection Complete",
         description: "Your solar panel analysis has been completed successfully.",
+        variant: "success",
       });
     },
     onError: (error) => {
@@ -82,9 +83,23 @@ export default function FaultDetection() {
         } else if (errorText.includes('overloaded') || errorText.includes('503') || errorText.includes('unavailable')) {
           errorTitle = "AI Service Temporarily Unavailable";
           errorMessage = "The AI analysis service is currently overloaded. Please wait a few minutes and try again. If the issue persists, try a different image or contact support.";
+          
+          // Use warning variant for service unavailability
+          toast({
+            title: errorTitle,
+            description: errorMessage,
+            variant: "warning",
+          });
+          return;
         } else if (errorText.includes('network') || errorText.includes('timeout')) {
           errorTitle = "Connection Error";
           errorMessage = "Network connection failed. Please check your internet connection and try again.";
+        } else if (errorText.includes('backend not connected') || errorText.includes('server not available')) {
+          errorTitle = "Backend Connection Error";
+          errorMessage = "The backend server is not connected properly. Please check the server status and try again.";
+        } else if (errorText.includes('fetch') || errorText.includes('cors') || errorText.includes('refused')) {
+          errorTitle = "Backend Connection Error";
+          errorMessage = "Cannot connect to the backend server. Please ensure the server is running and try again.";
         } else {
           errorMessage = error.message;
         }
@@ -104,7 +119,18 @@ export default function FaultDetection() {
     setCurrentImageFile(file);
   };
 
-  const handleAnalyze = (file: File) => {
+  const handleAnalyze = async (file: File) => {
+    // Check backend health before analysis
+    const isHealthy = await checkBackendHealth();
+    if (!isHealthy) {
+      toast({
+        title: "Backend Connection Error",
+        description: "Cannot connect to the backend server. Please ensure the server is running and try again.",
+        variant: "warning",
+      });
+      return;
+    }
+    
     setCurrentImageFile(file);
     analysisMutation.mutate(file);
   };
@@ -123,6 +149,7 @@ export default function FaultDetection() {
     toast({
       title: "Result Removed",
       description: "Fault detection result has been removed successfully.",
+      variant: "success",
     });
   };
 
@@ -140,6 +167,7 @@ export default function FaultDetection() {
     toast({
       title: "All Results Cleared",
       description: "All fault detection results have been cleared.",
+      variant: "success",
     });
   };
 
