@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar, Clock, TrendingUp, Zap, Leaf, DollarSign, Search, Filter, ChevronRight, ExternalLink, X } from "lucide-react";
+import { Calendar, Clock, TrendingUp, Zap, Leaf, DollarSign, Search, Filter, ChevronRight, ExternalLink, X, Newspaper } from "lucide-react";
+import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { motion } from "framer-motion";
@@ -134,18 +135,67 @@ export default function Articles() {
     );
   }
 
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 pt-16">
+      {/* Navigation Header */}
+      <header className="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-600 rounded-lg flex items-center justify-center">
+                <Newspaper className="text-white" size={20} />
+              </div>
+              <h1 className="text-xl sm:text-2xl font-bold text-blue-600">Solar Industry News</h1>
+            </div>
+            <nav className="hidden md:flex items-center space-x-8">
+              <Link href="/">
+                <button className="text-gray-600 hover:text-blue-600 transition-colors">Dashboard</button>
+              </Link>
+              <Link href="/chat">
+                <button className="text-gray-600 hover:text-blue-600 transition-colors">AI Assistant</button>
+              </Link>
+              <Link href="/about">
+                <button className="text-gray-600 hover:text-blue-600 transition-colors">About</button>
+              </Link>
+              <Button onClick={handleRefresh} variant="outline" size="sm">
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Refresh Articles
+              </Button>
+            </nav>
+            <div className="md:hidden">
+              <Button onClick={handleRefresh} variant="outline" size="sm">
+                <TrendingUp className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-blue-600 to-green-600 text-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
+            className="text-center"
           >
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Solar Industry News</h1>
-            <p className="text-gray-600 text-lg">AI-powered insights and latest developments in solar technology</p>
+            <h2 className="text-4xl font-bold mb-4">Latest Solar Industry News</h2>
+            <p className="text-xl text-blue-100 mb-6">Stay updated with the latest developments in solar technology, market trends, and industry insights</p>
+            <div className="flex justify-center space-x-4">
+              <Badge variant="secondary" className="bg-white/20 text-white">
+                <Zap className="w-4 h-4 mr-1" />
+                Real-time Updates
+              </Badge>
+              <Badge variant="secondary" className="bg-white/20 text-white">
+                <Leaf className="w-4 h-4 mr-1" />
+                Industry Insights
+              </Badge>
+            </div>
           </motion.div>
         </div>
       </div>

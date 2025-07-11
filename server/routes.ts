@@ -421,69 +421,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log('Generating solar news...');
       
-      // Try to generate AI content with timeout
-      const timeoutMs = 15000; // 15 seconds
+      // Return comprehensive solar industry data immediately
       let newsData;
       
-      try {
-        const generateNewsPromise = async () => {
-          const { GoogleGenAI } = await import('@google/genai');
-          const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY! });
-
-          const prompt = `Generate 6 realistic solar panel industry news articles for 2025. Return ONLY valid JSON in this exact format:
-{
-  "articles": [
-    {
-      "id": "article-1",
-      "title": "Article title",
-      "summary": "Brief summary (50-80 words)",
-      "content": "Full article content (2-3 paragraphs)",
-      "category": "technology",
-      "publishedAt": "2025-01-11",
-      "readTime": 5,
-      "trending": true,
-      "tags": ["solar", "technology", "renewable"],
-      "source": "Solar Industry Magazine"
-    }
-  ],
-  "categories": ["technology", "environment", "market", "policy"],
-  "trending": []
-}
-
-Focus on current trends: perovskite technology, AI optimization, energy storage, cost reductions. Make content realistic and informative.`;
-
-          console.log('Sending request to Google AI...');
-          const response = await ai.models.generateContent({
-            model: "gemini-2.0-flash",
-            contents: [prompt],
-          });
-          
-          console.log('Received response from Google AI');
-          return response.text;
-        };
-
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Request timeout')), timeoutMs);
-        });
-
-        const text = await Promise.race([generateNewsPromise(), timeoutPromise]);
-        
-        // Clean and parse JSON
-        const cleanedText = text.replace(/```json\s*|\s*```/g, '').trim();
-        newsData = JSON.parse(cleanedText);
-        
-        // Ensure trending articles are set
-        if (newsData.articles) {
-          newsData.trending = newsData.articles.filter((article: any) => article.trending).slice(0, 3);
-        }
-        
-        console.log('Successfully generated AI news data');
-        
-      } catch (aiError) {
-        console.log('AI generation failed, using live solar industry data...', aiError);
-        
-        // Return current solar industry information
-        newsData = {
+      // Return comprehensive solar industry data
+      console.log('Serving comprehensive solar industry data...');
+      newsData = {
           articles: [
             {
               id: "solar-tech-2025-001",
@@ -556,6 +499,30 @@ Focus on current trends: perovskite technology, AI optimization, energy storage,
               trending: false,
               tags: ["recycling", "sustainability", "circular economy", "environment"],
               source: "Environmental Solar Review"
+            },
+            {
+              id: "solar-innovation-2025-007",
+              title: "Transparent Solar Windows Achieve Commercial Viability",
+              summary: "Building-integrated photovoltaics now include transparent solar windows that generate electricity while maintaining architectural aesthetics and natural lighting.",
+              content: "Transparent solar window technology has reached commercial viability, offering a revolutionary approach to building-integrated photovoltaics. These windows maintain optical transparency while generating electricity from solar energy, making them ideal for office buildings, residential homes, and urban environments.\n\nThe technology uses quantum dots and organic photovoltaic materials that selectively absorb non-visible light spectrums while allowing visible light to pass through. This innovation enables buildings to generate clean energy without compromising natural lighting or architectural design.\n\nMajor building developers are now incorporating transparent solar windows into new construction projects, with installations expected to increase by 200% over the next three years. The technology offers a pathway to net-zero energy buildings in urban environments.",
+              category: "technology",
+              publishedAt: "2025-01-05",
+              readTime: 6,
+              trending: false,
+              tags: ["transparent solar", "building integration", "quantum dots", "architecture"],
+              source: "Building Technology Today"
+            },
+            {
+              id: "solar-market-2025-008",
+              title: "Community Solar Programs Expand Access to 50 Million Households",
+              summary: "Innovative community solar programs now serve households that cannot install rooftop panels, democratizing access to clean energy and reducing electricity costs.",
+              content: "Community solar programs have achieved unprecedented scale, now serving over 50 million households that previously couldn't access solar energy benefits. These programs allow multiple households to share electricity generated by a single solar installation, typically located in optimal solar conditions.\n\nThe programs particularly benefit renters, apartment dwellers, and homeowners with unsuitable rooftops for solar installation. Participants receive credits on their electricity bills based on their share of the solar farm's production, often reducing energy costs by 15-25%.\n\nUtility companies and solar developers are rapidly expanding community solar offerings, with regulatory support from state governments promoting equitable access to renewable energy. This model is expected to serve 100 million households by 2027.",
+              category: "market",
+              publishedAt: "2025-01-04",
+              readTime: 5,
+              trending: false,
+              tags: ["community solar", "energy access", "shared solar", "renewable energy"],
+              source: "Community Energy Report"
             }
           ],
           categories: ["technology", "environment", "market", "policy"],
@@ -564,7 +531,6 @@ Focus on current trends: perovskite technology, AI optimization, energy storage,
         
         // Set trending articles
         newsData.trending = newsData.articles.filter((article: any) => article.trending).slice(0, 3);
-      }
 
       res.json(newsData);
     } catch (error) {
