@@ -85,21 +85,21 @@ function addMetricCard(pdf: jsPDF, x: number, y: number, width: number, height: 
 }
 
 function addKeyValuePair(pdf: jsPDF, x: number, y: number, key: string, value: string, keyColor: number[] = colors.textLight, valueColor: number[] = colors.text): number {
-  // Key with improved formatting
+  // Key with compact formatting
   pdf.setFontSize(11);
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(...keyColor);
   pdf.text(`${key}:`, x, y);
   
-  // Value with proper text wrapping and spacing
+  // Value with proper text wrapping and reduced spacing
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(...valueColor);
   const pageWidth = pdf.internal.pageSize.getWidth();
-  const maxWidth = pageWidth - x - 80; // More spacing to prevent overlap
+  const maxWidth = pageWidth - x - 70; // Proper spacing without overlap
   const valueLines = pdf.splitTextToSize(value, maxWidth);
-  pdf.text(valueLines, x + 70, y); // More spacing between key and value
+  pdf.text(valueLines, x + 60, y); // Balanced spacing between key and value
   
-  return y + Math.max(valueLines.length * 5, 10) + 3; // More line spacing
+  return y + Math.max(valueLines.length * 4, 8) + 2; // Reduced line spacing
 }
 
 function checkPageSpace(pdf: jsPDF, currentY: number, neededSpace: number): number {
@@ -177,25 +177,17 @@ export async function generateInstallationPDF(
     
     yPosition = secondRowY + cardHeight + 20;
     
-    // System overview with improved layout
-    yPosition = checkPageSpace(pdf, yPosition, 60);
+    // System overview with compact layout
+    yPosition = checkPageSpace(pdf, yPosition, 50);
     yPosition = addSectionHeader(pdf, 'SYSTEM OVERVIEW', yPosition, colors.secondary);
     
-    // Two-column layout for system details
-    const leftCol = 30;
-    const rightCol = pageWidth / 2 + 10;
-    let leftY = yPosition;
-    let rightY = yPosition;
+    // Single column layout for better readability and spacing
+    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Roof Coverage', `${result.coverage}%`);
+    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Roof Type', result.roofType || 'Standard Residential');
+    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Usable Area', `${result.usableRoofArea || 'Auto-calculated'} sq ft`);
+    yPosition = addKeyValuePair(pdf, 25, yPosition, 'System Orientation', result.orientation || 'Optimized for Maximum Solar Gain');
     
-    // Left column
-    leftY = addKeyValuePair(pdf, leftCol, leftY, 'Roof Coverage', `${result.coverage}%`);
-    leftY = addKeyValuePair(pdf, leftCol, leftY, 'Roof Type', result.roofType || 'Standard Residential');
-    
-    // Right column  
-    rightY = addKeyValuePair(pdf, rightCol, rightY, 'Usable Area', `${result.usableRoofArea || 'Auto-calculated'} sq ft`);
-    rightY = addKeyValuePair(pdf, rightCol, rightY, 'System Orientation', result.orientation || 'Optimized for Maximum Solar Gain');
-    
-    yPosition = Math.max(leftY, rightY) + 15;
+    yPosition += 10;
 
     // Visual Analysis Section
     yPosition = checkPageSpace(pdf, yPosition, 120);
@@ -239,21 +231,24 @@ export async function generateInstallationPDF(
         // Add image with full width and height display
         pdf.addImage(imgData, 'JPEG', leftColumnX, yPosition + 5, imageWidth, imageHeight);
         
-        // Analysis visualization with full display
+        // Analysis visualization with exact same size as original
         if (analysisCanvasRef?.current) {
           pdf.text('Panel Layout Analysis', rightColumnX, yPosition);
           
+          // Create canvas with exact same dimensions as original image
           const overlayCanvas = await html2canvas(analysisCanvasRef.current, {
             backgroundColor: '#ffffff',
-            scale: 3, // Higher scale for better quality
+            scale: 2, // Consistent scale
             logging: false,
             useCORS: true,
-            allowTaint: true
+            allowTaint: true,
+            width: analysisCanvasRef.current.width,
+            height: analysisCanvasRef.current.height
           });
           
-          const overlayData = overlayCanvas.toDataURL('image/png', 0.95); // Higher quality
+          const overlayData = overlayCanvas.toDataURL('image/png', 0.95);
           
-          // Simple border with full overlay display
+          // Simple border with exactly same dimensions as original
           pdf.setDrawColor(...colors.border);
           pdf.setLineWidth(0.5);
           pdf.rect(rightColumnX, yPosition + 5, imageWidth, imageHeight);
@@ -489,17 +484,20 @@ export async function generateFaultDetectionPDF(
         if (analysisCanvasRef?.current) {
           pdf.text('Fault Detection Analysis', rightColumnX, yPosition);
           
+          // Create canvas with exact same dimensions as original image
           const overlayCanvas = await html2canvas(analysisCanvasRef.current, {
             backgroundColor: '#ffffff',
-            scale: 3, // Higher scale for better quality
+            scale: 2, // Consistent scale matching original
             logging: false,
             useCORS: true,
-            allowTaint: true
+            allowTaint: true,
+            width: analysisCanvasRef.current.width,
+            height: analysisCanvasRef.current.height
           });
           
-          const overlayData = overlayCanvas.toDataURL('image/png', 0.95); // Higher quality
+          const overlayData = overlayCanvas.toDataURL('image/png', 0.95);
           
-          // Simple border with full overlay display
+          // Simple border with exactly same dimensions as original
           pdf.setDrawColor(...colors.border);
           pdf.setLineWidth(0.5);
           pdf.rect(rightColumnX, yPosition + 5, imageWidth, imageHeight);

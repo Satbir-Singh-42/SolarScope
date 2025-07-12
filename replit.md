@@ -326,6 +326,7 @@ Changelog:
 - July 12, 2025. **CURRENCY LOCALIZED**: Updated PDF reports to display savings in Indian Rupees (₹) instead of USD with appropriate conversion rates for the Indian market
 - July 12, 2025. **PDF IMAGE DISPLAY ENHANCED**: Improved image rendering with full width/height display, higher quality canvas scaling (3x), and proper aspect ratio preservation for both original and analysis overlay images
 - July 12, 2025. **PDF FORMATTING IMPROVEMENTS**: Fixed image sizing consistency, enhanced annual savings formatting with Indian number format, improved technical specifications layout to prevent text overlap, and implemented AI-based realistic calculations
+- July 12, 2025. **PDF LAYOUT OPTIMIZED**: Reduced spacing in System Overview, converted to single-column layout for both System Overview and Technical Specifications, ensured Panel Layout Analysis images match original image dimensions exactly
 - July 12, 2025. **REPLIT MIGRATION COMPLETED**: Successfully completed migration from Replit Agent to Replit environment with all dependencies installed, workflow operational, and health check verified
 ```
 
