@@ -246,18 +246,35 @@ export async function generateInstallationPDF(
         if (analysisCanvasRef?.current) {
           pdf.text('Panel Layout Analysis', rightColumnX, yPosition);
           
-          // Force canvas to render at exact same size as displayed image
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
+          // Create standardized canvas with exact PDF dimensions
+          const standardCanvas = document.createElement('canvas');
+          const standardCtx = standardCanvas.getContext('2d');
           
-          // Set canvas to exact same pixel dimensions
-          canvas.width = analysisCanvasRef.current.width;
-          canvas.height = analysisCanvasRef.current.height;
+          // Force canvas to match PDF image dimensions precisely (convert mm to pixels at 72 DPI)
+          const pdfImageWidth = Math.round(imageWidth * 2.83);
+          const pdfImageHeight = Math.round(imageHeight * 2.83);
           
-          // Draw the analysis canvas content at full size
-          ctx?.drawImage(analysisCanvasRef.current, 0, 0, canvas.width, canvas.height);
+          standardCanvas.width = pdfImageWidth;
+          standardCanvas.height = pdfImageHeight;
           
-          const overlayData = canvas.toDataURL('image/png', 1.0);
+          // Fill with white background and draw analysis scaled to exact PDF size
+          if (standardCtx) {
+            standardCtx.fillStyle = '#ffffff';
+            standardCtx.fillRect(0, 0, standardCanvas.width, standardCanvas.height);
+            
+            // Scale analysis canvas to exact same dimensions as original image will appear in PDF
+            standardCtx.drawImage(
+              analysisCanvasRef.current, 
+              0, 0, 
+              analysisCanvasRef.current.width, 
+              analysisCanvasRef.current.height,
+              0, 0, 
+              standardCanvas.width, 
+              standardCanvas.height
+            );
+          }
+          
+          const overlayData = standardCanvas.toDataURL('image/png', 1.0);
           
           // Simple border with exactly same dimensions as original
           pdf.setDrawColor(...colors.border);
@@ -495,18 +512,35 @@ export async function generateFaultDetectionPDF(
         if (analysisCanvasRef?.current) {
           pdf.text('Fault Detection Analysis', rightColumnX, yPosition);
           
-          // Force canvas to render at exact same size as displayed image
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
+          // Create standardized canvas with exact PDF dimensions  
+          const standardCanvas = document.createElement('canvas');
+          const standardCtx = standardCanvas.getContext('2d');
           
-          // Set canvas to exact same pixel dimensions
-          canvas.width = analysisCanvasRef.current.width;
-          canvas.height = analysisCanvasRef.current.height;
+          // Force canvas to match PDF image dimensions precisely (convert mm to pixels at 72 DPI)
+          const pdfImageWidth = Math.round(imageWidth * 2.83);
+          const pdfImageHeight = Math.round(imageHeight * 2.83);
           
-          // Draw the analysis canvas content at full size
-          ctx?.drawImage(analysisCanvasRef.current, 0, 0, canvas.width, canvas.height);
+          standardCanvas.width = pdfImageWidth;
+          standardCanvas.height = pdfImageHeight;
           
-          const overlayData = canvas.toDataURL('image/png', 1.0);
+          // Fill with white background and draw analysis scaled to exact PDF size
+          if (standardCtx) {
+            standardCtx.fillStyle = '#ffffff';
+            standardCtx.fillRect(0, 0, standardCanvas.width, standardCanvas.height);
+            
+            // Scale analysis canvas to exact same dimensions as original image will appear in PDF
+            standardCtx.drawImage(
+              analysisCanvasRef.current, 
+              0, 0, 
+              analysisCanvasRef.current.width, 
+              analysisCanvasRef.current.height,
+              0, 0, 
+              standardCanvas.width, 
+              standardCanvas.height
+            );
+          }
+          
+          const overlayData = standardCanvas.toDataURL('image/png', 1.0);
           
           // Simple border with exactly same dimensions as original
           pdf.setDrawColor(...colors.border);
