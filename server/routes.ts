@@ -150,7 +150,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/health", async (_req, res) => {
     let aiStatus = "offline";
     let aiError = null;
+    let dbStatus = "disconnected";
+    let dbError = null;
     
+    // Test AI connection
     try {
       const apiKey = process.env.GOOGLE_API_KEY;
       
@@ -185,14 +188,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
     
+    // Test database connection
+    try {
+      if (process.env.DATABASE_URL) {
+        // Test database connectivity by fetching one message
+        await storage.getChatMessages(1);
+        dbStatus = "connected";
+      } else {
+        dbStatus = "not_configured";
+        dbError = "DATABASE_URL not provided - using memory storage";
+      }
+    } catch (error) {
+      console.warn('Database check failed:', error);
+      dbStatus = "error";
+      dbError = error instanceof Error ? error.message : "Database connection failed";
+    }
+    
+    const overallStatus = aiStatus === "online" && (dbStatus === "connected" || dbStatus === "not_configured") 
+      ? "healthy" 
+      : "degraded";
+    
     res.json({ 
-      status: aiStatus === "online" ? "healthy" : "degraded", 
+      status: overallStatus, 
       timestamp: new Date().toISOString(),
       service: "SolarScope AI",
       version: "1.0.0",
       ai: {
         status: aiStatus,
         error: aiError
+      },
+      database: {
+        status: dbStatus,
+        error: dbError,
+        storage_type: process.env.DATABASE_URL ? "postgresql" : "memory"
       }
     });
   });
