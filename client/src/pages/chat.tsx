@@ -258,13 +258,8 @@ export default function Chat() {
       setTypingMessageId(newMessageId);
     },
     onError: (error: any) => {
-      // Only set to error if it's a definite API connection failure
-      if (error.message && (error.message.includes('Failed to fetch') || error.message.includes('Network error'))) {
-        setApiStatus('error');
-      } else {
-        // For other errors (like quota), keep as connected since API responds
-        setApiStatus('connected');
-      }
+      // Set to error for any API failure - if AI can't respond, it's offline from user perspective
+      setApiStatus('error');
       console.error('AI Chat error:', error);
       
       // Create a more helpful error message based on the error type
@@ -775,7 +770,7 @@ export default function Chat() {
                       <span className="text-xs font-medium">
                         {apiStatus === 'connected' ? 'Online' : 
                          apiStatus === 'error' ? 'Offline' : 
-                         'Online'}
+                         'Checking'}
                       </span>
                     </Badge>
                     {/* New Conversation Button - Only show if there are user messages */}
