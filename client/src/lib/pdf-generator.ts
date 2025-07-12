@@ -201,11 +201,11 @@ export async function generateInstallationPDF(
     yPosition = checkPageSpace(pdf, yPosition, 120);
     yPosition = addSectionHeader(pdf, 'VISUAL ANALYSIS', yPosition, colors.accent);
 
-    // Simple side-by-side layout with proper dimensions
-    const imageWidth = 80; // Larger width for better visibility
-    const imageHeight = 60; // Larger height for better proportions
-    const leftColumnX = 20;
-    const rightColumnX = leftColumnX + imageWidth + 15; // Side by side with small gap
+    // Full-width image layout for better visibility
+    const imageWidth = 85; // Increased width for better display
+    const imageHeight = 64; // Increased height maintaining aspect ratio
+    const leftColumnX = 15;
+    const rightColumnX = leftColumnX + imageWidth + 10; // Closer spacing for better fit
     
     // Original rooftop image
     if (imageUrl) {
@@ -236,26 +236,28 @@ export async function generateInstallationPDF(
         pdf.setLineWidth(0.5);
         pdf.rect(leftColumnX, yPosition + 5, imageWidth, imageHeight);
         
-        // Add image with proper sizing
-        pdf.addImage(imgData, 'JPEG', leftColumnX + 1, yPosition + 6, imageWidth - 2, imageHeight - 2);
+        // Add image with full width and height display
+        pdf.addImage(imgData, 'JPEG', leftColumnX, yPosition + 5, imageWidth, imageHeight);
         
-        // Analysis visualization 
+        // Analysis visualization with full display
         if (analysisCanvasRef?.current) {
           pdf.text('Panel Layout Analysis', rightColumnX, yPosition);
           
           const overlayCanvas = await html2canvas(analysisCanvasRef.current, {
             backgroundColor: '#ffffff',
-            scale: 2,
-            logging: false
+            scale: 3, // Higher scale for better quality
+            logging: false,
+            useCORS: true,
+            allowTaint: true
           });
           
-          const overlayData = overlayCanvas.toDataURL('image/png');
+          const overlayData = overlayCanvas.toDataURL('image/png', 0.95); // Higher quality
           
-          // Simple border matching original
+          // Simple border with full overlay display
           pdf.setDrawColor(...colors.border);
           pdf.setLineWidth(0.5);
           pdf.rect(rightColumnX, yPosition + 5, imageWidth, imageHeight);
-          pdf.addImage(overlayData, 'PNG', rightColumnX + 1, yPosition + 6, imageWidth - 2, imageHeight - 2);
+          pdf.addImage(overlayData, 'PNG', rightColumnX, yPosition + 5, imageWidth, imageHeight);
         }
         
         yPosition += imageHeight + 15; // Proper spacing after images
@@ -443,11 +445,11 @@ export async function generateFaultDetectionPDF(
     yPosition = checkPageSpace(pdf, yPosition, 120);
     yPosition = addSectionHeader(pdf, 'VISUAL ANALYSIS', yPosition, colors.accent);
 
-    // Simple side-by-side layout matching installation PDF
-    const imageWidth = 80; // Larger width for better visibility  
-    const imageHeight = 60; // Larger height for better proportions
-    const leftColumnX = 20;
-    const rightColumnX = leftColumnX + imageWidth + 15; // Side by side with small gap
+    // Full-width image layout matching installation PDF
+    const imageWidth = 85; // Increased width for better display
+    const imageHeight = 64; // Increased height maintaining aspect ratio
+    const leftColumnX = 15;
+    const rightColumnX = leftColumnX + imageWidth + 10; // Closer spacing for better fit
     
     if (imageUrl) {
       try {
@@ -466,35 +468,45 @@ export async function generateFaultDetectionPDF(
 
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx?.drawImage(img, 0, 0);
         
-        const imgData = canvas.toDataURL('image/jpeg', 0.9);
+        // Set proper canvas dimensions for better quality
+        const scaleFactor = 2;
+        canvas.width = imageWidth * scaleFactor * 3.779; // Convert mm to pixels at 96 DPI
+        canvas.height = imageHeight * scaleFactor * 3.779;
         
-        // Simple border
+        if (ctx) {
+          // High quality rendering
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        }
+        
+        const imgData = canvas.toDataURL('image/jpeg', 0.95); // Higher quality
+        
+        // Simple border with full image display
         pdf.setDrawColor(...colors.border);
         pdf.setLineWidth(0.5);
         pdf.rect(leftColumnX, yPosition + 5, imageWidth, imageHeight);
-        pdf.addImage(imgData, 'JPEG', leftColumnX + 1, yPosition + 6, imageWidth - 2, imageHeight - 2);
+        pdf.addImage(imgData, 'JPEG', leftColumnX, yPosition + 5, imageWidth, imageHeight);
         
         if (analysisCanvasRef?.current) {
           pdf.text('Fault Detection Analysis', rightColumnX, yPosition);
           
           const overlayCanvas = await html2canvas(analysisCanvasRef.current, {
             backgroundColor: '#ffffff',
-            scale: 2,
-            logging: false
+            scale: 3, // Higher scale for better quality
+            logging: false,
+            useCORS: true,
+            allowTaint: true
           });
           
-          const overlayData = overlayCanvas.toDataURL('image/png');
-          const overlayHeight = (overlayCanvas.height / overlayCanvas.width) * imageWidth;
+          const overlayData = overlayCanvas.toDataURL('image/png', 0.95); // Higher quality
           
-          // Simple border matching original
+          // Simple border with full overlay display
           pdf.setDrawColor(...colors.border);
           pdf.setLineWidth(0.5);
           pdf.rect(rightColumnX, yPosition + 5, imageWidth, imageHeight);
-          pdf.addImage(overlayData, 'PNG', rightColumnX + 1, yPosition + 6, imageWidth - 2, imageHeight - 2);
+          pdf.addImage(overlayData, 'PNG', rightColumnX, yPosition + 5, imageWidth, imageHeight);
         }
         
         yPosition += imageHeight + 15; // Proper spacing after images
