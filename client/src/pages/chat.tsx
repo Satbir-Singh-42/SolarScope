@@ -669,11 +669,7 @@ export default function Chat() {
               <button className="text-primary font-medium transition-all duration-300 ease-in-out transform hover:scale-105">
                 AI Assistant
               </button>
-              <Link href="/articles">
-                <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">
-                  Articles
-                </button>
-              </Link>
+
               <Link href="/about">
                 <button className="text-secondary-custom hover:text-primary transition-all duration-300 ease-in-out transform hover:scale-105">
                   About

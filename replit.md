@@ -323,6 +323,7 @@ Changelog:
 - July 11, 2025. **CUSTOM LOADING SPINNER IMPLEMENTED**: Replaced generic loading with custom radial spinner matching provided design with "LOADING..." text and smooth animations
 - July 11, 2025. **CATEGORY-SPECIFIC IMAGES ADDED**: Each of the 4 article categories now has distinct, high-quality Unsplash images - technology (solar panels), market (installations), environment (green energy), policy (government buildings)
 - July 11, 2025. **ASSETS LOCALIZED**: Downloaded and saved all article images to `/client/public/assets/articles/` for future use, reducing external dependencies and improving performance
+- July 12, 2025. **ARTICLES REMOVED**: Permanently removed all articles-related functionality, files, API endpoints, and navigation links as requested by user
 - July 12, 2025. **REPLIT MIGRATION COMPLETED**: Successfully completed migration from Replit Agent to Replit environment with all dependencies installed, workflow operational, and health check verified
 ```
 
