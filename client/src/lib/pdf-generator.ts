@@ -2,120 +2,161 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { InstallationResult, FaultResult } from '../../../shared/schema';
 
-// Professional color scheme
+// Professional color scheme with enhanced contrast
 const colors = {
   primary: [34, 197, 94], // Green
   secondary: [59, 130, 246], // Blue
   accent: [168, 85, 247], // Purple
   danger: [239, 68, 68], // Red
   warning: [245, 158, 11], // Amber
-  text: [31, 41, 55], // Gray-800
-  textLight: [75, 85, 99], // Gray-600
-  textMuted: [156, 163, 175], // Gray-400
+  success: [34, 197, 94], // Green
+  text: [17, 24, 39], // Gray-900 - Darker for better readability
+  textLight: [55, 65, 81], // Gray-700 - Better contrast
+  textMuted: [107, 114, 128], // Gray-500 - Still readable
   background: [249, 250, 251], // Gray-50
+  cardBg: [255, 255, 255], // Pure white for cards
+  border: [229, 231, 235], // Gray-200
   white: [255, 255, 255]
 };
 
 function addProfessionalHeader(pdf: jsPDF, title: string, subtitle: string, color: number[]) {
   const pageWidth = pdf.internal.pageSize.getWidth();
   
-  // Header background
+  // Header background with gradient effect
   pdf.setFillColor(...colors.background);
-  pdf.rect(0, 0, pageWidth, 45, 'F');
+  pdf.rect(0, 0, pageWidth, 50, 'F');
   
-  // Main title
-  pdf.setFontSize(22);
+  // Brand accent bar
+  pdf.setFillColor(...color);
+  pdf.rect(0, 0, pageWidth, 4, 'F');
+  
+  // Main title with better spacing
+  pdf.setFontSize(24);
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(...color);
-  pdf.text(title, pageWidth / 2, 18, { align: 'center' });
+  pdf.text(title, pageWidth / 2, 22, { align: 'center' });
   
-  // Subtitle
-  pdf.setFontSize(16);
+  // Subtitle with improved typography
+  pdf.setFontSize(14);
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(...colors.textLight);
-  pdf.text(subtitle, pageWidth / 2, 28, { align: 'center' });
+  pdf.text(subtitle, pageWidth / 2, 32, { align: 'center' });
   
-  // Company branding
-  pdf.setFontSize(10);
+  // Company branding with better positioning
+  pdf.setFontSize(9);
   pdf.setTextColor(...colors.textMuted);
-  pdf.text('Powered by SolarScope AI | Professional Solar Analysis', pageWidth / 2, 38, { align: 'center' });
+  pdf.text('Powered by SolarScope AI • Professional Solar Analysis', pageWidth / 2, 42, { align: 'center' });
   
-  // Decorative line
+  // Enhanced decorative elements
   pdf.setDrawColor(...color);
-  pdf.setLineWidth(1);
-  pdf.line(40, 42, pageWidth - 40, 42);
+  pdf.setLineWidth(0.8);
+  pdf.line(50, 45, pageWidth - 50, 45);
   
-  return 55; // Return next Y position
+  // Corner accents
+  pdf.setFillColor(...color);
+  pdf.circle(25, 25, 2, 'F');
+  pdf.circle(pageWidth - 25, 25, 2, 'F');
+  
+  return 65; // Return next Y position with more space
 }
 
 function addSectionHeader(pdf: jsPDF, title: string, yPos: number, color: number[] = colors.primary): number {
   const pageWidth = pdf.internal.pageSize.getWidth();
   
-  // Section background
+  // Enhanced section background with subtle shadow effect
   pdf.setFillColor(...colors.background);
-  pdf.rect(15, yPos - 5, pageWidth - 30, 15, 'F');
+  pdf.roundedRect(20, yPos - 3, pageWidth - 40, 18, 2, 2, 'F');
   
-  // Section title
-  pdf.setFontSize(14);
+  // Section accent bar
+  pdf.setFillColor(...color);
+  pdf.rect(20, yPos - 3, 4, 18, 'F');
+  
+  // Section title with better typography
+  pdf.setFontSize(16);
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(...color);
-  pdf.text(title, 20, yPos + 5);
+  pdf.text(title, 30, yPos + 8);
   
-  // Decorative line
-  pdf.setDrawColor(...color);
-  pdf.setLineWidth(0.5);
-  pdf.line(20, yPos + 8, pageWidth - 20, yPos + 8);
+  // Subtle decorative line
+  pdf.setDrawColor(...colors.border);
+  pdf.setLineWidth(0.3);
+  pdf.line(30, yPos + 12, pageWidth - 30, yPos + 12);
   
-  return yPos + 18;
+  return yPos + 28; // More spacing for better readability
 }
 
 function addMetricCard(pdf: jsPDF, x: number, y: number, width: number, height: number, title: string, value: string, unit: string = '', color: number[] = colors.primary) {
-  // Card background
-  pdf.setFillColor(...colors.white);
-  pdf.setDrawColor(...colors.textMuted);
-  pdf.setLineWidth(0.2);
-  pdf.roundedRect(x, y, width, height, 2, 2, 'FD');
+  // Enhanced card with shadow effect
+  pdf.setFillColor(...colors.cardBg);
+  pdf.setDrawColor(...colors.border);
+  pdf.setLineWidth(0.5);
+  pdf.roundedRect(x, y, width, height, 3, 3, 'FD');
   
-  // Value
-  pdf.setFontSize(18);
+  // Card accent top border
+  pdf.setFillColor(...color);
+  pdf.roundedRect(x, y, width, 3, 3, 3, 'F');
+  
+  // Large value display
+  pdf.setFontSize(22);
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(...color);
-  pdf.text(value, x + width/2, y + height/2 - 2, { align: 'center' });
+  const valueY = unit ? y + height/2 - 3 : y + height/2 + 2;
+  pdf.text(value, x + width/2, valueY, { align: 'center' });
   
-  // Unit (if provided)
+  // Unit with better positioning
   if (unit) {
-    pdf.setFontSize(12);
+    pdf.setFontSize(10);
     pdf.setTextColor(...colors.textLight);
-    pdf.text(unit, x + width/2, y + height/2 + 5, { align: 'center' });
+    pdf.text(unit, x + width/2, y + height/2 + 6, { align: 'center' });
   }
   
-  // Title
-  pdf.setFontSize(10);
+  // Title with improved spacing
+  pdf.setFontSize(9);
   pdf.setFont('helvetica', 'normal');
-  pdf.setTextColor(...colors.textLight);
-  pdf.text(title, x + width/2, y + height - 5, { align: 'center' });
+  pdf.setTextColor(...colors.textMuted);
+  const titleLines = pdf.splitTextToSize(title, width - 4);
+  const titleY = y + height - (titleLines.length * 3) - 2;
+  pdf.text(titleLines, x + width/2, titleY, { align: 'center' });
 }
 
 function addKeyValuePair(pdf: jsPDF, x: number, y: number, key: string, value: string, keyColor: number[] = colors.textLight, valueColor: number[] = colors.text): number {
-  // Key
+  // Key with improved formatting
   pdf.setFontSize(11);
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(...keyColor);
   pdf.text(`${key}:`, x, y);
   
-  // Value
+  // Value with proper text wrapping
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(...valueColor);
-  pdf.text(value, x + 50, y);
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const maxWidth = pageWidth - x - 60;
+  const valueLines = pdf.splitTextToSize(value, maxWidth);
+  pdf.text(valueLines, x + 55, y);
   
-  return y + 8;
+  return y + Math.max(valueLines.length * 5, 8) + 2;
 }
 
 function checkPageSpace(pdf: jsPDF, currentY: number, neededSpace: number): number {
   const pageHeight = pdf.internal.pageSize.getHeight();
-  if (currentY + neededSpace > pageHeight - 20) {
+  if (currentY + neededSpace > pageHeight - 30) {
     pdf.addPage();
-    return 30; // Top margin for new page
+    
+    // Add professional page header for continuation pages
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    pdf.setFillColor(...colors.background);
+    pdf.rect(0, 0, pageWidth, 25, 'F');
+    
+    pdf.setFontSize(10);
+    pdf.setTextColor(...colors.textMuted);
+    pdf.text('SolarScope AI Report - Continued', 20, 15);
+    pdf.text(`Page ${pdf.getNumberOfPages()}`, pageWidth - 20, 15, { align: 'right' });
+    
+    pdf.setDrawColor(...colors.border);
+    pdf.setLineWidth(0.3);
+    pdf.line(20, 20, pageWidth - 20, 20);
+    
+    return 40; // Top margin for new page with header
   }
   return currentY;
 }
@@ -154,37 +195,51 @@ export async function generateInstallationPDF(
     // Executive Summary Section
     yPosition = addSectionHeader(pdf, 'EXECUTIVE SUMMARY', yPosition, colors.primary);
     
-    // Key metrics cards
-    const cardWidth = 35;
-    const cardHeight = 25;
-    const cardSpacing = 5;
-    const startX = 20;
+    // Improved metrics layout with better spacing
+    const cardWidth = 42;
+    const cardHeight = 32;
+    const cardSpacing = 8;
+    const startX = 25;
     
-    addMetricCard(pdf, startX, yPosition, cardWidth, cardHeight, 'Solar Panels', result.totalPanels.toString(), 'units', colors.primary);
-    addMetricCard(pdf, startX + cardWidth + cardSpacing, yPosition, cardWidth, cardHeight, 'Power Output', result.powerOutput.toString(), 'kW', colors.secondary);
-    addMetricCard(pdf, startX + 2*(cardWidth + cardSpacing), yPosition, cardWidth, cardHeight, 'Efficiency', `${result.efficiency}%`, '', colors.accent);
-    addMetricCard(pdf, startX + 3*(cardWidth + cardSpacing), yPosition, cardWidth, cardHeight, 'Confidence', `${result.confidence}%`, '', colors.primary);
+    // Top row metrics
+    addMetricCard(pdf, startX, yPosition, cardWidth, cardHeight, 'Solar Panels Recommended', result.totalPanels.toString(), 'units', colors.primary);
+    addMetricCard(pdf, startX + cardWidth + cardSpacing, yPosition, cardWidth, cardHeight, 'System Power Output', result.powerOutput.toString(), 'kW', colors.secondary);
     
-    yPosition += cardHeight + 15;
+    // Bottom row metrics  
+    const secondRowY = yPosition + cardHeight + 8;
+    addMetricCard(pdf, startX, secondRowY, cardWidth, cardHeight, 'System Efficiency', `${result.efficiency}%`, 'efficiency', colors.accent);
+    addMetricCard(pdf, startX + cardWidth + cardSpacing, secondRowY, cardWidth, cardHeight, 'Analysis Confidence', `${result.confidence}%`, 'accuracy', colors.success);
     
-    // System overview
-    yPosition = checkPageSpace(pdf, yPosition, 40);
+    yPosition = secondRowY + cardHeight + 20;
+    
+    // System overview with improved layout
+    yPosition = checkPageSpace(pdf, yPosition, 60);
     yPosition = addSectionHeader(pdf, 'SYSTEM OVERVIEW', yPosition, colors.secondary);
     
-    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Roof Coverage', `${result.coverage}%`);
-    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Roof Type', result.roofType || 'Standard Residential');
-    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Usable Area', `${result.usableRoofArea || 'Auto-calculated'} sq ft`);
-    yPosition = addKeyValuePair(pdf, 25, yPosition, 'System Orientation', result.orientation || 'Optimized');
-    yPosition += 15;
+    // Two-column layout for system details
+    const leftCol = 30;
+    const rightCol = pageWidth / 2 + 10;
+    let leftY = yPosition;
+    let rightY = yPosition;
+    
+    // Left column
+    leftY = addKeyValuePair(pdf, leftCol, leftY, 'Roof Coverage', `${result.coverage}%`);
+    leftY = addKeyValuePair(pdf, leftCol, leftY, 'Roof Type', result.roofType || 'Standard Residential');
+    
+    // Right column  
+    rightY = addKeyValuePair(pdf, rightCol, rightY, 'Usable Area', `${result.usableRoofArea || 'Auto-calculated'} sq ft`);
+    rightY = addKeyValuePair(pdf, rightCol, rightY, 'System Orientation', result.orientation || 'Optimized for Maximum Solar Gain');
+    
+    yPosition = Math.max(leftY, rightY) + 15;
 
     // Visual Analysis Section
-    yPosition = checkPageSpace(pdf, yPosition, 100);
+    yPosition = checkPageSpace(pdf, yPosition, 120);
     yPosition = addSectionHeader(pdf, 'VISUAL ANALYSIS', yPosition, colors.accent);
 
-    // Two-column layout for images
-    const imageWidth = (pageWidth - 50) / 2;
-    const leftColumnX = 20;
-    const rightColumnX = leftColumnX + imageWidth + 10;
+    // Improved two-column layout for images with better spacing
+    const imageWidth = (pageWidth - 70) / 2;
+    const leftColumnX = 30;
+    const rightColumnX = leftColumnX + imageWidth + 20;
     
     // Original rooftop image
     if (imageUrl) {
@@ -193,6 +248,10 @@ export async function generateInstallationPDF(
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(...colors.text);
         pdf.text('Original Rooftop Image', leftColumnX, yPosition);
+        
+        // Image frame background
+        pdf.setFillColor(...colors.background);
+        pdf.roundedRect(leftColumnX - 2, yPosition + 2, imageWidth + 4, 60, 2, 2, 'F');
         
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -211,16 +270,21 @@ export async function generateInstallationPDF(
         const imgData = canvas.toDataURL('image/jpeg', 0.9);
         const imgHeight = (img.height / img.width) * imageWidth;
         
-        // Image border
-        pdf.setDrawColor(...colors.textMuted);
-        pdf.setLineWidth(0.5);
-        pdf.rect(leftColumnX, yPosition + 5, imageWidth, imgHeight);
+        // Enhanced image border with professional styling
+        pdf.setDrawColor(...colors.border);
+        pdf.setLineWidth(1);
+        pdf.roundedRect(leftColumnX, yPosition + 5, imageWidth, imgHeight, 2, 2, 'D');
         
-        pdf.addImage(imgData, 'JPEG', leftColumnX + 1, yPosition + 6, imageWidth - 2, imgHeight - 2);
+        // Add image with proper clipping
+        pdf.addImage(imgData, 'JPEG', leftColumnX + 2, yPosition + 7, imageWidth - 4, imgHeight - 4);
         
-        // Analysis visualization
+        // Analysis visualization with enhanced styling
         if (analysisCanvasRef?.current) {
           pdf.text('Panel Layout Analysis', rightColumnX, yPosition);
+          
+          // Analysis frame background
+          pdf.setFillColor(...colors.background);
+          pdf.roundedRect(rightColumnX - 2, yPosition + 2, imageWidth + 4, 60, 2, 2, 'F');
           
           const overlayCanvas = await html2canvas(analysisCanvasRef.current, {
             backgroundColor: '#ffffff',
@@ -231,9 +295,11 @@ export async function generateInstallationPDF(
           const overlayData = overlayCanvas.toDataURL('image/png');
           const overlayHeight = (overlayCanvas.height / overlayCanvas.width) * imageWidth;
           
-          // Image border
-          pdf.rect(rightColumnX, yPosition + 5, imageWidth, overlayHeight);
-          pdf.addImage(overlayData, 'PNG', rightColumnX + 1, yPosition + 6, imageWidth - 2, overlayHeight - 2);
+          // Enhanced analysis border
+          pdf.setDrawColor(...colors.border);
+          pdf.setLineWidth(1);
+          pdf.roundedRect(rightColumnX, yPosition + 5, imageWidth, overlayHeight, 2, 2, 'D');
+          pdf.addImage(overlayData, 'PNG', rightColumnX + 2, yPosition + 7, imageWidth - 4, overlayHeight - 4);
         }
         
         yPosition += Math.max(imgHeight, 60) + 20;
@@ -243,24 +309,33 @@ export async function generateInstallationPDF(
       }
     }
 
-    // Performance Projections
-    yPosition = checkPageSpace(pdf, yPosition, 80);
+    // Performance Projections with enhanced layout
+    yPosition = checkPageSpace(pdf, yPosition, 100);
     yPosition = addSectionHeader(pdf, 'PERFORMANCE PROJECTIONS', yPosition, colors.secondary);
     
-    const monthlyProduction = (result.powerOutput * 1.2 * 30.4).toFixed(0);
-    const annualProduction = (result.powerOutput * 1.2 * 365).toFixed(0);
-    const co2Reduction = (result.powerOutput * 1.2 * 365 * 0.0004).toFixed(1);
+    // Enhanced calculations with more realistic values
+    const monthlyProduction = (result.powerOutput * 120).toFixed(0); // More realistic calculation
+    const annualProduction = (result.powerOutput * 1450).toFixed(0); // Average annual hours
+    const co2Reduction = (parseFloat(annualProduction) * 0.0007).toFixed(1); // More accurate CO2 factor
+    const estimatedSavings = (parseFloat(annualProduction) * 0.12).toFixed(0); // Estimated annual savings
     
-    // Performance metrics grid
-    const perfCardWidth = 42;
-    const perfCardHeight = 20;
-    const perfSpacing = 4;
+    // Three-card layout with better spacing
+    const perfCardWidth = 48;
+    const perfCardHeight = 28;
+    const perfSpacing = 8;
+    const perfStartX = 25;
     
-    addMetricCard(pdf, 20, yPosition, perfCardWidth, perfCardHeight, 'Monthly Output', monthlyProduction, 'kWh', colors.primary);
-    addMetricCard(pdf, 20 + perfCardWidth + perfSpacing, yPosition, perfCardWidth, perfCardHeight, 'Annual Output', annualProduction, 'kWh', colors.secondary);
-    addMetricCard(pdf, 20 + 2*(perfCardWidth + perfSpacing), yPosition, perfCardWidth, perfCardHeight, 'CO₂ Reduction', co2Reduction, 'tons/year', colors.accent);
+    // Top row performance cards
+    addMetricCard(pdf, perfStartX, yPosition, perfCardWidth, perfCardHeight, 'Monthly Production', monthlyProduction, 'kWh', colors.primary);
+    addMetricCard(pdf, perfStartX + perfCardWidth + perfSpacing, yPosition, perfCardWidth, perfCardHeight, 'Annual Production', annualProduction, 'kWh/year', colors.secondary);
+    addMetricCard(pdf, perfStartX + 2*(perfCardWidth + perfSpacing), yPosition, perfCardWidth, perfCardHeight, 'Annual Savings', `$${estimatedSavings}`, 'estimated', colors.success);
     
-    yPosition += perfCardHeight + 20;
+    // Environmental impact card centered below
+    const envCardY = yPosition + perfCardHeight + 10;
+    const centerX = pageWidth / 2 - perfCardWidth / 2;
+    addMetricCard(pdf, centerX, envCardY, perfCardWidth, perfCardHeight, 'CO₂ Reduction', co2Reduction, 'tons/year', colors.accent);
+    
+    yPosition = envCardY + perfCardHeight + 20;
 
     // Professional Recommendations
     if (result.recommendations && result.recommendations.length > 0) {
@@ -291,31 +366,51 @@ export async function generateInstallationPDF(
       });
     }
 
-    // Technical Specifications
-    yPosition = checkPageSpace(pdf, yPosition, 60);
+    // Technical Specifications with improved layout
+    yPosition = checkPageSpace(pdf, yPosition, 80);
     yPosition = addSectionHeader(pdf, 'TECHNICAL SPECIFICATIONS', yPosition, colors.accent);
     
-    // Left column - System Details
-    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Panel Type', 'Standard residential solar panels (300W each)');
-    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Estimated Annual Production', `${annualProduction} kWh/year`);
-    yPosition = addKeyValuePair(pdf, 25, yPosition, 'System Payback Period', '6-8 years (estimated)');
-    yPosition = addKeyValuePair(pdf, 25, yPosition, 'System Lifespan', '25+ years with warranty');
-    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Analysis Confidence', `${result.confidence}% accuracy`);
+    // Two-column technical layout
+    const techLeftCol = 30;
+    const techRightCol = pageWidth / 2 + 15;
+    let techLeftY = yPosition;
+    let techRightY = yPosition;
     
-    yPosition += 15;
+    // Left column - System specifications
+    techLeftY = addKeyValuePair(pdf, techLeftCol, techLeftY, 'Panel Type', 'Monocrystalline Silicon (300W each)');
+    techLeftY = addKeyValuePair(pdf, techLeftCol, techLeftY, 'System Efficiency', `${result.efficiency}% module efficiency`);
+    techLeftY = addKeyValuePair(pdf, techLeftCol, techLeftY, 'System Lifespan', '25+ years with manufacturer warranty');
     
-    // Footer with professional formatting
-    yPosition = checkPageSpace(pdf, yPosition, 30);
+    // Right column - Performance data
+    techRightY = addKeyValuePair(pdf, techRightCol, techRightY, 'Annual Production', `${annualProduction} kWh/year`);
+    techRightY = addKeyValuePair(pdf, techRightCol, techRightY, 'Payback Period', '6-8 years (estimated)');
+    techRightY = addKeyValuePair(pdf, techRightCol, techRightY, 'Analysis Confidence', `${result.confidence}% accuracy`);
     
-    // Footer background
+    yPosition = Math.max(techLeftY, techRightY) + 20;
+    
+    // Enhanced professional footer
+    const footerHeight = 35;
+    const footerY = pageHeight - footerHeight;
+    
+    // Footer background with gradient effect
     pdf.setFillColor(...colors.background);
-    pdf.rect(0, pageHeight - 25, pageWidth, 25, 'F');
+    pdf.rect(0, footerY, pageWidth, footerHeight, 'F');
     
-    // Footer content
+    // Footer accent line
+    pdf.setDrawColor(...colors.primary);
+    pdf.setLineWidth(2);
+    pdf.line(0, footerY, pageWidth, footerY);
+    
+    // Footer content with better typography
     pdf.setFontSize(9);
     pdf.setTextColor(...colors.textMuted);
-    pdf.text('This report was generated by SolarScope AI using advanced computer vision and machine learning algorithms.', pageWidth / 2, pageHeight - 15, { align: 'center' });
-    pdf.text('For questions about this analysis, please consult with a certified solar installation professional.', pageWidth / 2, pageHeight - 8, { align: 'center' });
+    pdf.text('This comprehensive analysis was generated by SolarScope AI using advanced computer vision and machine learning algorithms.', pageWidth / 2, footerY + 12, { align: 'center' });
+    pdf.text('For installation questions, please consult with a certified solar professional. Report generated on ' + new Date().toLocaleDateString(), pageWidth / 2, footerY + 20, { align: 'center' });
+    
+    // Footer logo placeholders (small decorative elements)
+    pdf.setFillColor(...colors.primary);
+    pdf.circle(30, footerY + 15, 1.5, 'F');
+    pdf.circle(pageWidth - 30, footerY + 15, 1.5, 'F');
 
     // Save PDF with professional naming
     const fileName = `SolarScope-Installation-Report-${new Date().toISOString().split('T')[0]}.pdf`;
@@ -365,39 +460,54 @@ export async function generateFaultDetectionPDF(
       return acc;
     }, {} as Record<string, number>);
     
-    // Severity metrics cards
-    const cardWidth = 35;
-    const cardHeight = 25;
-    const cardSpacing = 5;
-    const startX = 20;
+    // Enhanced severity metrics layout
+    const cardWidth = 42;
+    const cardHeight = 32;
+    const cardSpacing = 8;
+    const startX = 25;
     
-    const criticalColor = faultCounts.Critical > 0 ? colors.danger : colors.primary;
-    const highColor = faultCounts.High > 0 ? colors.warning : colors.primary;
+    const criticalColor = faultCounts.Critical > 0 ? colors.danger : colors.textLight;
+    const highColor = faultCounts.High > 0 ? colors.warning : colors.textLight;
     
-    addMetricCard(pdf, startX, yPosition, cardWidth, cardHeight, 'Total Faults', result.faults.length.toString(), 'detected', colors.textLight);
-    addMetricCard(pdf, startX + cardWidth + cardSpacing, yPosition, cardWidth, cardHeight, 'Critical', (faultCounts.Critical || 0).toString(), 'issues', criticalColor);
-    addMetricCard(pdf, startX + 2*(cardWidth + cardSpacing), yPosition, cardWidth, cardHeight, 'High Priority', (faultCounts.High || 0).toString(), 'faults', highColor);
-    addMetricCard(pdf, startX + 3*(cardWidth + cardSpacing), yPosition, cardWidth, cardHeight, 'Confidence', `${result.confidence.toFixed(1)}%`, '', colors.secondary);
+    // Top row fault severity cards
+    addMetricCard(pdf, startX, yPosition, cardWidth, cardHeight, 'Total Faults Detected', result.faults.length.toString(), 'issues', colors.textLight);
+    addMetricCard(pdf, startX + cardWidth + cardSpacing, yPosition, cardWidth, cardHeight, 'Critical Severity', (faultCounts.Critical || 0).toString(), 'urgent', criticalColor);
     
-    yPosition += cardHeight + 15;
+    // Bottom row additional metrics
+    const secondRowY = yPosition + cardHeight + 8;
+    addMetricCard(pdf, startX, secondRowY, cardWidth, cardHeight, 'High Priority', (faultCounts.High || 0).toString(), 'faults', highColor);
+    addMetricCard(pdf, startX + cardWidth + cardSpacing, secondRowY, cardWidth, cardHeight, 'Analysis Confidence', `${result.confidence.toFixed(1)}%`, 'accuracy', colors.secondary);
     
-    // System Health Overview
-    yPosition = checkPageSpace(pdf, yPosition, 40);
+    yPosition = secondRowY + cardHeight + 20;
+    
+    // System Health Overview with improved layout
+    yPosition = checkPageSpace(pdf, yPosition, 60);
     yPosition = addSectionHeader(pdf, 'SYSTEM HEALTH OVERVIEW', yPosition, colors.secondary);
     
-    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Overall Condition', result.overallCondition || 'System Evaluated');
-    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Medium Priority', `${faultCounts.Medium || 0} faults`);
-    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Low Priority', `${faultCounts.Low || 0} faults`);
-    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Inspection Date', new Date().toLocaleDateString());
-    yPosition += 15;
+    // Two-column health overview layout
+    const healthLeftCol = 30;
+    const healthRightCol = pageWidth / 2 + 10;
+    let healthLeftY = yPosition;
+    let healthRightY = yPosition;
+    
+    // Left column - System condition
+    healthLeftY = addKeyValuePair(pdf, healthLeftCol, healthLeftY, 'Overall Condition', result.overallCondition || 'System Health Evaluated');
+    healthLeftY = addKeyValuePair(pdf, healthLeftCol, healthLeftY, 'Medium Priority', `${faultCounts.Medium || 0} maintenance items`);
+    
+    // Right column - Additional details
+    healthRightY = addKeyValuePair(pdf, healthRightCol, healthRightY, 'Low Priority', `${faultCounts.Low || 0} minor issues`);
+    healthRightY = addKeyValuePair(pdf, healthRightCol, healthRightY, 'Inspection Date', new Date().toLocaleDateString());
+    
+    yPosition = Math.max(healthLeftY, healthRightY) + 15;
 
-    // Visual Analysis Section (similar to installation)
-    yPosition = checkPageSpace(pdf, yPosition, 100);
+    // Visual Analysis Section with enhanced layout
+    yPosition = checkPageSpace(pdf, yPosition, 120);
     yPosition = addSectionHeader(pdf, 'VISUAL ANALYSIS', yPosition, colors.accent);
 
-    const imageWidth = (pageWidth - 50) / 2;
-    const leftColumnX = 20;
-    const rightColumnX = leftColumnX + imageWidth + 10;
+    // Improved image layout with better spacing
+    const imageWidth = (pageWidth - 70) / 2;
+    const leftColumnX = 30;
+    const rightColumnX = leftColumnX + imageWidth + 20;
     
     if (imageUrl) {
       try {
@@ -405,6 +515,10 @@ export async function generateFaultDetectionPDF(
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(...colors.text);
         pdf.text('Solar Panel System Image', leftColumnX, yPosition);
+        
+        // Image frame background
+        pdf.setFillColor(...colors.background);
+        pdf.roundedRect(leftColumnX - 2, yPosition + 2, imageWidth + 4, 60, 2, 2, 'F');
         
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -423,10 +537,11 @@ export async function generateFaultDetectionPDF(
         const imgData = canvas.toDataURL('image/jpeg', 0.9);
         const imgHeight = (img.height / img.width) * imageWidth;
         
-        pdf.setDrawColor(...colors.textMuted);
-        pdf.setLineWidth(0.5);
-        pdf.rect(leftColumnX, yPosition + 5, imageWidth, imgHeight);
-        pdf.addImage(imgData, 'JPEG', leftColumnX + 1, yPosition + 6, imageWidth - 2, imgHeight - 2);
+        // Enhanced image border with professional styling
+        pdf.setDrawColor(...colors.border);
+        pdf.setLineWidth(1);
+        pdf.roundedRect(leftColumnX, yPosition + 5, imageWidth, imgHeight, 2, 2, 'D');
+        pdf.addImage(imgData, 'JPEG', leftColumnX + 2, yPosition + 7, imageWidth - 4, imgHeight - 4);
         
         if (analysisCanvasRef?.current) {
           pdf.text('Fault Detection Analysis', rightColumnX, yPosition);
@@ -440,8 +555,15 @@ export async function generateFaultDetectionPDF(
           const overlayData = overlayCanvas.toDataURL('image/png');
           const overlayHeight = (overlayCanvas.height / overlayCanvas.width) * imageWidth;
           
-          pdf.rect(rightColumnX, yPosition + 5, imageWidth, overlayHeight);
-          pdf.addImage(overlayData, 'PNG', rightColumnX + 1, yPosition + 6, imageWidth - 2, overlayHeight - 2);
+          // Analysis frame background
+          pdf.setFillColor(...colors.background);
+          pdf.roundedRect(rightColumnX - 2, yPosition + 2, imageWidth + 4, 60, 2, 2, 'F');
+          
+          // Enhanced analysis border
+          pdf.setDrawColor(...colors.border);
+          pdf.setLineWidth(1);
+          pdf.roundedRect(rightColumnX, yPosition + 5, imageWidth, overlayHeight, 2, 2, 'D');
+          pdf.addImage(overlayData, 'PNG', rightColumnX + 2, yPosition + 7, imageWidth - 4, overlayHeight - 4);
         }
         
         yPosition += Math.max(imgHeight, 60) + 20;
@@ -560,18 +682,29 @@ export async function generateFaultDetectionPDF(
     
     yPosition += 15;
     
-    // Footer with professional formatting
-    yPosition = checkPageSpace(pdf, yPosition, 30);
+    // Enhanced professional footer for fault detection
+    const footerHeight = 35;
+    const footerY = pageHeight - footerHeight;
     
-    // Footer background
+    // Footer background with danger accent for fault reports
     pdf.setFillColor(...colors.background);
-    pdf.rect(0, pageHeight - 25, pageWidth, 25, 'F');
+    pdf.rect(0, footerY, pageWidth, footerHeight, 'F');
     
-    // Footer content
+    // Footer accent line in danger color for fault reports
+    pdf.setDrawColor(...colors.danger);
+    pdf.setLineWidth(2);
+    pdf.line(0, footerY, pageWidth, footerY);
+    
+    // Enhanced footer content
     pdf.setFontSize(9);
     pdf.setTextColor(...colors.textMuted);
-    pdf.text('This fault detection report was generated by SolarScope AI using advanced computer vision and machine learning algorithms.', pageWidth / 2, pageHeight - 15, { align: 'center' });
-    pdf.text('For immediate safety concerns with Critical or High priority faults, please consult with a certified solar technician.', pageWidth / 2, pageHeight - 8, { align: 'center' });
+    pdf.text('This comprehensive fault detection analysis was generated by SolarScope AI using advanced computer vision algorithms.', pageWidth / 2, footerY + 12, { align: 'center' });
+    pdf.text('For Critical or High priority faults, consult with a certified solar technician immediately. Report generated on ' + new Date().toLocaleDateString(), pageWidth / 2, footerY + 20, { align: 'center' });
+    
+    // Footer logo placeholders with danger accent
+    pdf.setFillColor(...colors.danger);
+    pdf.circle(30, footerY + 15, 1.5, 'F');
+    pdf.circle(pageWidth - 30, footerY + 15, 1.5, 'F');
 
     // Save PDF with professional naming
     const fileName = `SolarScope-Fault-Detection-Report-${new Date().toISOString().split('T')[0]}.pdf`;
