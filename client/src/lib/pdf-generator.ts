@@ -22,101 +22,66 @@ const colors = {
 function addProfessionalHeader(pdf: jsPDF, title: string, subtitle: string, color: number[]) {
   const pageWidth = pdf.internal.pageSize.getWidth();
   
-  // Header background with gradient effect
-  pdf.setFillColor(...colors.background);
-  pdf.rect(0, 0, pageWidth, 50, 'F');
-  
-  // Brand accent bar
-  pdf.setFillColor(...color);
-  pdf.rect(0, 0, pageWidth, 4, 'F');
-  
-  // Main title with better spacing
-  pdf.setFontSize(24);
+  // Simple clean title
+  pdf.setFontSize(18);
   pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(...color);
-  pdf.text(title, pageWidth / 2, 22, { align: 'center' });
+  pdf.setTextColor(...colors.text);
+  pdf.text(title, 20, 25);
   
-  // Subtitle with improved typography
-  pdf.setFontSize(14);
+  // Simple subtitle
+  pdf.setFontSize(11);
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(...colors.textLight);
-  pdf.text(subtitle, pageWidth / 2, 32, { align: 'center' });
+  pdf.text(subtitle, 20, 35);
   
-  // Company branding with better positioning
-  pdf.setFontSize(9);
-  pdf.setTextColor(...colors.textMuted);
-  pdf.text('Powered by SolarScope AI • Professional Solar Analysis', pageWidth / 2, 42, { align: 'center' });
+  // Simple line separator
+  pdf.setDrawColor(...colors.border);
+  pdf.setLineWidth(0.5);
+  pdf.line(20, 40, pageWidth - 20, 40);
   
-  // Enhanced decorative elements
-  pdf.setDrawColor(...color);
-  pdf.setLineWidth(0.8);
-  pdf.line(50, 45, pageWidth - 50, 45);
-  
-  // Corner accents
-  pdf.setFillColor(...color);
-  pdf.circle(25, 25, 2, 'F');
-  pdf.circle(pageWidth - 25, 25, 2, 'F');
-  
-  return 65; // Return next Y position with more space
+  return 50;
 }
 
 function addSectionHeader(pdf: jsPDF, title: string, yPos: number, color: number[] = colors.primary): number {
-  const pageWidth = pdf.internal.pageSize.getWidth();
-  
-  // Enhanced section background with subtle shadow effect
-  pdf.setFillColor(...colors.background);
-  pdf.roundedRect(20, yPos - 3, pageWidth - 40, 18, 2, 2, 'F');
-  
-  // Section accent bar
-  pdf.setFillColor(...color);
-  pdf.rect(20, yPos - 3, 4, 18, 'F');
-  
-  // Section title with better typography
-  pdf.setFontSize(16);
+  // Simple section header
+  pdf.setFontSize(14);
   pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(...color);
-  pdf.text(title, 30, yPos + 8);
+  pdf.setTextColor(...colors.text);
+  pdf.text(title, 20, yPos);
   
-  // Subtle decorative line
+  // Simple underline
   pdf.setDrawColor(...colors.border);
-  pdf.setLineWidth(0.3);
-  pdf.line(30, yPos + 12, pageWidth - 30, yPos + 12);
+  pdf.setLineWidth(0.5);
+  pdf.line(20, yPos + 2, 120, yPos + 2);
   
-  return yPos + 28; // More spacing for better readability
+  return yPos + 15;
 }
 
 function addMetricCard(pdf: jsPDF, x: number, y: number, width: number, height: number, title: string, value: string, unit: string = '', color: number[] = colors.primary) {
-  // Enhanced card with shadow effect
-  pdf.setFillColor(...colors.cardBg);
+  // Simple bordered box
   pdf.setDrawColor(...colors.border);
   pdf.setLineWidth(0.5);
-  pdf.roundedRect(x, y, width, height, 3, 3, 'FD');
+  pdf.rect(x, y, width, height);
   
-  // Card accent top border
-  pdf.setFillColor(...color);
-  pdf.roundedRect(x, y, width, 3, 3, 3, 'F');
-  
-  // Large value display
-  pdf.setFontSize(22);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(...color);
-  const valueY = unit ? y + height/2 - 3 : y + height/2 + 2;
-  pdf.text(value, x + width/2, valueY, { align: 'center' });
-  
-  // Unit with better positioning
-  if (unit) {
-    pdf.setFontSize(10);
-    pdf.setTextColor(...colors.textLight);
-    pdf.text(unit, x + width/2, y + height/2 + 6, { align: 'center' });
-  }
-  
-  // Title with improved spacing
+  // Title
   pdf.setFontSize(9);
   pdf.setFont('helvetica', 'normal');
-  pdf.setTextColor(...colors.textMuted);
-  const titleLines = pdf.splitTextToSize(title, width - 4);
-  const titleY = y + height - (titleLines.length * 3) - 2;
-  pdf.text(titleLines, x + width/2, titleY, { align: 'center' });
+  pdf.setTextColor(...colors.textLight);
+  pdf.text(title, x + width/2, y + 8, { align: 'center' });
+  
+  // Value
+  pdf.setFontSize(16);
+  pdf.setFont('helvetica', 'bold');
+  pdf.setTextColor(...colors.text);
+  pdf.text(value, x + width/2, y + height/2 + 2, { align: 'center' });
+  
+  // Unit
+  if (unit) {
+    pdf.setFontSize(8);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(...colors.textMuted);
+    pdf.text(unit, x + width/2, y + height - 5, { align: 'center' });
+  }
 }
 
 function addKeyValuePair(pdf: jsPDF, x: number, y: number, key: string, value: string, keyColor: number[] = colors.textLight, valueColor: number[] = colors.text): number {
@@ -236,11 +201,11 @@ export async function generateInstallationPDF(
     yPosition = checkPageSpace(pdf, yPosition, 120);
     yPosition = addSectionHeader(pdf, 'VISUAL ANALYSIS', yPosition, colors.accent);
 
-    // Fixed two-column layout with consistent image sizing
-    const imageWidth = 75; // Fixed width for consistent sizing
-    const imageHeight = 50; // Fixed height for consistent layout
-    const leftColumnX = 30;
-    const rightColumnX = pageWidth - imageWidth - 30; // Right-aligned for better balance
+    // Simple side-by-side layout with proper dimensions
+    const imageWidth = 80; // Larger width for better visibility
+    const imageHeight = 60; // Larger height for better proportions
+    const leftColumnX = 20;
+    const rightColumnX = leftColumnX + imageWidth + 15; // Side by side with small gap
     
     // Original rooftop image
     if (imageUrl) {
@@ -249,10 +214,6 @@ export async function generateInstallationPDF(
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(...colors.text);
         pdf.text('Original Rooftop Image', leftColumnX, yPosition);
-        
-        // Enhanced image frame background
-        pdf.setFillColor(...colors.background);
-        pdf.roundedRect(leftColumnX - 3, yPosition + 2, imageWidth + 6, imageHeight + 6, 3, 3, 'F');
         
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -270,21 +231,17 @@ export async function generateInstallationPDF(
         
         const imgData = canvas.toDataURL('image/jpeg', 0.9);
         
-        // Professional image border with consistent sizing
+        // Simple border
         pdf.setDrawColor(...colors.border);
-        pdf.setLineWidth(1.5);
-        pdf.roundedRect(leftColumnX, yPosition + 5, imageWidth, imageHeight, 3, 3, 'D');
+        pdf.setLineWidth(0.5);
+        pdf.rect(leftColumnX, yPosition + 5, imageWidth, imageHeight);
         
-        // Add image with fixed dimensions for consistency
-        pdf.addImage(imgData, 'JPEG', leftColumnX + 2, yPosition + 7, imageWidth - 4, imageHeight - 4);
+        // Add image with proper sizing
+        pdf.addImage(imgData, 'JPEG', leftColumnX + 1, yPosition + 6, imageWidth - 2, imageHeight - 2);
         
-        // Analysis visualization with consistent sizing
+        // Analysis visualization 
         if (analysisCanvasRef?.current) {
           pdf.text('Panel Layout Analysis', rightColumnX, yPosition);
-          
-          // Analysis frame background matching original image
-          pdf.setFillColor(...colors.background);
-          pdf.roundedRect(rightColumnX - 3, yPosition + 2, imageWidth + 6, imageHeight + 6, 3, 3, 'F');
           
           const overlayCanvas = await html2canvas(analysisCanvasRef.current, {
             backgroundColor: '#ffffff',
@@ -294,14 +251,14 @@ export async function generateInstallationPDF(
           
           const overlayData = overlayCanvas.toDataURL('image/png');
           
-          // Consistent analysis border
+          // Simple border matching original
           pdf.setDrawColor(...colors.border);
-          pdf.setLineWidth(1.5);
-          pdf.roundedRect(rightColumnX, yPosition + 5, imageWidth, imageHeight, 3, 3, 'D');
-          pdf.addImage(overlayData, 'PNG', rightColumnX + 2, yPosition + 7, imageWidth - 4, imageHeight - 4);
+          pdf.setLineWidth(0.5);
+          pdf.rect(rightColumnX, yPosition + 5, imageWidth, imageHeight);
+          pdf.addImage(overlayData, 'PNG', rightColumnX + 1, yPosition + 6, imageWidth - 2, imageHeight - 2);
         }
         
-        yPosition += imageHeight + 25; // Consistent spacing after images
+        yPosition += imageHeight + 15; // Proper spacing after images
       } catch (error) {
         console.warn('Could not add images to PDF:', error);
         yPosition += 20;
@@ -387,29 +344,12 @@ export async function generateInstallationPDF(
     
     yPosition = Math.max(techLeftY, techRightY) + 20;
     
-    // Enhanced professional footer
-    const footerHeight = 35;
-    const footerY = pageHeight - footerHeight;
+    // Simple footer
+    const footerY = pageHeight - 20;
     
-    // Footer background with gradient effect
-    pdf.setFillColor(...colors.background);
-    pdf.rect(0, footerY, pageWidth, footerHeight, 'F');
-    
-    // Footer accent line
-    pdf.setDrawColor(...colors.primary);
-    pdf.setLineWidth(2);
-    pdf.line(0, footerY, pageWidth, footerY);
-    
-    // Footer content with better typography
-    pdf.setFontSize(9);
+    pdf.setFontSize(8);
     pdf.setTextColor(...colors.textMuted);
-    pdf.text('This comprehensive analysis was generated by SolarScope AI using advanced computer vision and machine learning algorithms.', pageWidth / 2, footerY + 12, { align: 'center' });
-    pdf.text('For installation questions, please consult with a certified solar professional. Report generated on ' + new Date().toLocaleDateString(), pageWidth / 2, footerY + 20, { align: 'center' });
-    
-    // Footer logo placeholders (small decorative elements)
-    pdf.setFillColor(...colors.primary);
-    pdf.circle(30, footerY + 15, 1.5, 'F');
-    pdf.circle(pageWidth - 30, footerY + 15, 1.5, 'F');
+    pdf.text('Generated by SolarScope AI - ' + new Date().toLocaleDateString(), pageWidth / 2, footerY, { align: 'center' });
 
     // Save PDF with professional naming
     const fileName = `SolarScope-Installation-Report-${new Date().toISOString().split('T')[0]}.pdf`;
@@ -503,11 +443,11 @@ export async function generateFaultDetectionPDF(
     yPosition = checkPageSpace(pdf, yPosition, 120);
     yPosition = addSectionHeader(pdf, 'VISUAL ANALYSIS', yPosition, colors.accent);
 
-    // Fixed image layout with consistent sizing (matching installation PDF)
-    const imageWidth = 75; // Fixed width for consistent sizing
-    const imageHeight = 50; // Fixed height for consistent layout
-    const leftColumnX = 30;
-    const rightColumnX = pageWidth - imageWidth - 30; // Right-aligned for better balance
+    // Simple side-by-side layout matching installation PDF
+    const imageWidth = 80; // Larger width for better visibility  
+    const imageHeight = 60; // Larger height for better proportions
+    const leftColumnX = 20;
+    const rightColumnX = leftColumnX + imageWidth + 15; // Side by side with small gap
     
     if (imageUrl) {
       try {
@@ -515,10 +455,6 @@ export async function generateFaultDetectionPDF(
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(...colors.text);
         pdf.text('Solar Panel System Image', leftColumnX, yPosition);
-        
-        // Enhanced image frame background (matching installation style)
-        pdf.setFillColor(...colors.background);
-        pdf.roundedRect(leftColumnX - 3, yPosition + 2, imageWidth + 6, imageHeight + 6, 3, 3, 'F');
         
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -536,11 +472,11 @@ export async function generateFaultDetectionPDF(
         
         const imgData = canvas.toDataURL('image/jpeg', 0.9);
         
-        // Professional image border with consistent sizing
+        // Simple border
         pdf.setDrawColor(...colors.border);
-        pdf.setLineWidth(1.5);
-        pdf.roundedRect(leftColumnX, yPosition + 5, imageWidth, imageHeight, 3, 3, 'D');
-        pdf.addImage(imgData, 'JPEG', leftColumnX + 2, yPosition + 7, imageWidth - 4, imageHeight - 4);
+        pdf.setLineWidth(0.5);
+        pdf.rect(leftColumnX, yPosition + 5, imageWidth, imageHeight);
+        pdf.addImage(imgData, 'JPEG', leftColumnX + 1, yPosition + 6, imageWidth - 2, imageHeight - 2);
         
         if (analysisCanvasRef?.current) {
           pdf.text('Fault Detection Analysis', rightColumnX, yPosition);
@@ -554,18 +490,14 @@ export async function generateFaultDetectionPDF(
           const overlayData = overlayCanvas.toDataURL('image/png');
           const overlayHeight = (overlayCanvas.height / overlayCanvas.width) * imageWidth;
           
-          // Analysis frame background matching original image
-          pdf.setFillColor(...colors.background);
-          pdf.roundedRect(rightColumnX - 3, yPosition + 2, imageWidth + 6, imageHeight + 6, 3, 3, 'F');
-          
-          // Consistent analysis border with fixed dimensions
+          // Simple border matching original
           pdf.setDrawColor(...colors.border);
-          pdf.setLineWidth(1.5);
-          pdf.roundedRect(rightColumnX, yPosition + 5, imageWidth, imageHeight, 3, 3, 'D');
-          pdf.addImage(overlayData, 'PNG', rightColumnX + 2, yPosition + 7, imageWidth - 4, imageHeight - 4);
+          pdf.setLineWidth(0.5);
+          pdf.rect(rightColumnX, yPosition + 5, imageWidth, imageHeight);
+          pdf.addImage(overlayData, 'PNG', rightColumnX + 1, yPosition + 6, imageWidth - 2, imageHeight - 2);
         }
         
-        yPosition += imageHeight + 25; // Consistent spacing after images
+        yPosition += imageHeight + 15; // Proper spacing after images
       } catch (error) {
         console.warn('Could not add images to PDF:', error);
         yPosition += 20;
@@ -681,29 +613,12 @@ export async function generateFaultDetectionPDF(
     
     yPosition += 15;
     
-    // Enhanced professional footer for fault detection
-    const footerHeight = 35;
-    const footerY = pageHeight - footerHeight;
+    // Simple footer
+    const footerY = pageHeight - 20;
     
-    // Footer background with danger accent for fault reports
-    pdf.setFillColor(...colors.background);
-    pdf.rect(0, footerY, pageWidth, footerHeight, 'F');
-    
-    // Footer accent line in danger color for fault reports
-    pdf.setDrawColor(...colors.danger);
-    pdf.setLineWidth(2);
-    pdf.line(0, footerY, pageWidth, footerY);
-    
-    // Enhanced footer content
-    pdf.setFontSize(9);
+    pdf.setFontSize(8);
     pdf.setTextColor(...colors.textMuted);
-    pdf.text('This comprehensive fault detection analysis was generated by SolarScope AI using advanced computer vision algorithms.', pageWidth / 2, footerY + 12, { align: 'center' });
-    pdf.text('For Critical or High priority faults, consult with a certified solar technician immediately. Report generated on ' + new Date().toLocaleDateString(), pageWidth / 2, footerY + 20, { align: 'center' });
-    
-    // Footer logo placeholders with danger accent
-    pdf.setFillColor(...colors.danger);
-    pdf.circle(30, footerY + 15, 1.5, 'F');
-    pdf.circle(pageWidth - 30, footerY + 15, 1.5, 'F');
+    pdf.text('Generated by SolarScope AI - ' + new Date().toLocaleDateString(), pageWidth / 2, footerY, { align: 'center' });
 
     // Save PDF with professional naming
     const fileName = `SolarScope-Fault-Detection-Report-${new Date().toISOString().split('T')[0]}.pdf`;

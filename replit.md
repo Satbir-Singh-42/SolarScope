@@ -322,6 +322,7 @@ Changelog:
 - July 12, 2025. **FULL SYSTEM VERIFICATION**: Confirmed AI chat, database storage, health monitoring, and all pages responding properly with new database connection
 - July 12, 2025. **PDF FORMATTING ENHANCED**: Completely redesigned PDF generation with professional layout, color scheme, metric cards, section headers, two-column image layouts, and comprehensive styling for both installation and fault detection reports
 - July 12, 2025. **PDF PROFESSIONAL REDESIGN**: Enhanced PDF formatting with improved typography, better spacing, enhanced color scheme, professional metric cards, two-column layouts, enhanced image borders, and comprehensive footer styling
+- July 12, 2025. **PDF SIMPLIFIED**: Removed decorative elements and created clean, professional PDF format with consistent 80x60mm image sizing, simple borders, and proper text layout to prevent overflow issues
 - July 12, 2025. **REPLIT MIGRATION COMPLETED**: Successfully completed migration from Replit Agent to Replit environment with all dependencies installed, workflow operational, and health check verified
 ```
 
