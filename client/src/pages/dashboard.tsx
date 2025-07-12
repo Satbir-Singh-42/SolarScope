@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Home, Search, Menu, CloudSun, MessageCircle, Bot, X, HelpCircle, Newspaper } from "lucide-react";
+import { Home, Search, Menu, CloudSun, MessageCircle, Bot, X, HelpCircle } from "lucide-react";
 import { Link } from "wouter";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import InstallationAnalysis from "@/components/installation-analysis";
@@ -113,12 +113,7 @@ export default function Dashboard() {
                     
                     <div className="flex flex-col space-y-4">
                       <h3 className="font-semibold text-lg text-primary">Information</h3>
-                      <Link href="/articles">
-                        <Button variant="outline" className="w-full justify-start space-x-3 transition-all duration-300 ease-in-out transform hover:scale-105" onClick={() => setIsMenuOpen(false)}>
-                          <Newspaper size={20} />
-                          <span>Solar News</span>
-                        </Button>
-                      </Link>
+
                       <Link href="/about">
                         <Button variant="outline" className="w-full justify-start space-x-3 transition-all duration-300 ease-in-out transform hover:scale-105" onClick={() => setIsMenuOpen(false)}>
                           <HelpCircle size={20} />
