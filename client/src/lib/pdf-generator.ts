@@ -69,11 +69,22 @@ function addMetricCard(pdf: jsPDF, x: number, y: number, width: number, height: 
   pdf.setTextColor(...colors.textLight);
   pdf.text(title, x + width/2, y + 8, { align: 'center' });
   
-  // Value
+  // Value with proper rupee symbol formatting
   pdf.setFontSize(16);
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(...colors.text);
-  pdf.text(value, x + width/2, y + height/2 + 2, { align: 'center' });
+  
+  // Handle rupee symbol properly for better formatting
+  if (value.includes('₹')) {
+    // Split rupee symbol and number for better display
+    const rupeeValue = value.replace('₹', '');
+    pdf.setFontSize(12);
+    pdf.text('₹', x + width/2 - 10, y + height/2 + 2, { align: 'center' });
+    pdf.setFontSize(14);
+    pdf.text(rupeeValue, x + width/2 + 6, y + height/2 + 2, { align: 'center' });
+  } else {
+    pdf.text(value, x + width/2, y + height/2 + 2, { align: 'center' });
+  }
   
   // Unit
   if (unit) {
@@ -235,18 +246,18 @@ export async function generateInstallationPDF(
         if (analysisCanvasRef?.current) {
           pdf.text('Panel Layout Analysis', rightColumnX, yPosition);
           
-          // Create canvas with exact same dimensions as original image
-          const overlayCanvas = await html2canvas(analysisCanvasRef.current, {
-            backgroundColor: '#ffffff',
-            scale: 2, // Consistent scale
-            logging: false,
-            useCORS: true,
-            allowTaint: true,
-            width: analysisCanvasRef.current.width,
-            height: analysisCanvasRef.current.height
-          });
+          // Force canvas to render at exact same size as displayed image
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
           
-          const overlayData = overlayCanvas.toDataURL('image/png', 0.95);
+          // Set canvas to exact same pixel dimensions
+          canvas.width = analysisCanvasRef.current.width;
+          canvas.height = analysisCanvasRef.current.height;
+          
+          // Draw the analysis canvas content at full size
+          ctx?.drawImage(analysisCanvasRef.current, 0, 0, canvas.width, canvas.height);
+          
+          const overlayData = canvas.toDataURL('image/png', 1.0);
           
           // Simple border with exactly same dimensions as original
           pdf.setDrawColor(...colors.border);
@@ -484,18 +495,18 @@ export async function generateFaultDetectionPDF(
         if (analysisCanvasRef?.current) {
           pdf.text('Fault Detection Analysis', rightColumnX, yPosition);
           
-          // Create canvas with exact same dimensions as original image
-          const overlayCanvas = await html2canvas(analysisCanvasRef.current, {
-            backgroundColor: '#ffffff',
-            scale: 2, // Consistent scale matching original
-            logging: false,
-            useCORS: true,
-            allowTaint: true,
-            width: analysisCanvasRef.current.width,
-            height: analysisCanvasRef.current.height
-          });
+          // Force canvas to render at exact same size as displayed image
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
           
-          const overlayData = overlayCanvas.toDataURL('image/png', 0.95);
+          // Set canvas to exact same pixel dimensions
+          canvas.width = analysisCanvasRef.current.width;
+          canvas.height = analysisCanvasRef.current.height;
+          
+          // Draw the analysis canvas content at full size
+          ctx?.drawImage(analysisCanvasRef.current, 0, 0, canvas.width, canvas.height);
+          
+          const overlayData = canvas.toDataURL('image/png', 1.0);
           
           // Simple border with exactly same dimensions as original
           pdf.setDrawColor(...colors.border);

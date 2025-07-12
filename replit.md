@@ -327,6 +327,7 @@ Changelog:
 - July 12, 2025. **PDF IMAGE DISPLAY ENHANCED**: Improved image rendering with full width/height display, higher quality canvas scaling (3x), and proper aspect ratio preservation for both original and analysis overlay images
 - July 12, 2025. **PDF FORMATTING IMPROVEMENTS**: Fixed image sizing consistency, enhanced annual savings formatting with Indian number format, improved technical specifications layout to prevent text overlap, and implemented AI-based realistic calculations
 - July 12, 2025. **PDF LAYOUT OPTIMIZED**: Reduced spacing in System Overview, converted to single-column layout for both System Overview and Technical Specifications, ensured Panel Layout Analysis images match original image dimensions exactly
+- July 12, 2025. **PDF IMAGE SIZING FIXED**: Enhanced canvas rendering to force exact image dimensions matching original rooftop image for consistent visual presentation in both installation and fault detection reports
 - July 12, 2025. **REPLIT MIGRATION COMPLETED**: Successfully completed migration from Replit Agent to Replit environment with all dependencies installed, workflow operational, and health check verified
 ```
 
