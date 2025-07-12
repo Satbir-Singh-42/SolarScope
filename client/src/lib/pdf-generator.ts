@@ -236,10 +236,11 @@ export async function generateInstallationPDF(
     yPosition = checkPageSpace(pdf, yPosition, 120);
     yPosition = addSectionHeader(pdf, 'VISUAL ANALYSIS', yPosition, colors.accent);
 
-    // Improved two-column layout for images with better spacing
-    const imageWidth = (pageWidth - 70) / 2;
+    // Fixed two-column layout with consistent image sizing
+    const imageWidth = 75; // Fixed width for consistent sizing
+    const imageHeight = 50; // Fixed height for consistent layout
     const leftColumnX = 30;
-    const rightColumnX = leftColumnX + imageWidth + 20;
+    const rightColumnX = pageWidth - imageWidth - 30; // Right-aligned for better balance
     
     // Original rooftop image
     if (imageUrl) {
@@ -249,9 +250,9 @@ export async function generateInstallationPDF(
         pdf.setTextColor(...colors.text);
         pdf.text('Original Rooftop Image', leftColumnX, yPosition);
         
-        // Image frame background
+        // Enhanced image frame background
         pdf.setFillColor(...colors.background);
-        pdf.roundedRect(leftColumnX - 2, yPosition + 2, imageWidth + 4, 60, 2, 2, 'F');
+        pdf.roundedRect(leftColumnX - 3, yPosition + 2, imageWidth + 6, imageHeight + 6, 3, 3, 'F');
         
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -268,23 +269,22 @@ export async function generateInstallationPDF(
         ctx?.drawImage(img, 0, 0);
         
         const imgData = canvas.toDataURL('image/jpeg', 0.9);
-        const imgHeight = (img.height / img.width) * imageWidth;
         
-        // Enhanced image border with professional styling
+        // Professional image border with consistent sizing
         pdf.setDrawColor(...colors.border);
-        pdf.setLineWidth(1);
-        pdf.roundedRect(leftColumnX, yPosition + 5, imageWidth, imgHeight, 2, 2, 'D');
+        pdf.setLineWidth(1.5);
+        pdf.roundedRect(leftColumnX, yPosition + 5, imageWidth, imageHeight, 3, 3, 'D');
         
-        // Add image with proper clipping
-        pdf.addImage(imgData, 'JPEG', leftColumnX + 2, yPosition + 7, imageWidth - 4, imgHeight - 4);
+        // Add image with fixed dimensions for consistency
+        pdf.addImage(imgData, 'JPEG', leftColumnX + 2, yPosition + 7, imageWidth - 4, imageHeight - 4);
         
-        // Analysis visualization with enhanced styling
+        // Analysis visualization with consistent sizing
         if (analysisCanvasRef?.current) {
           pdf.text('Panel Layout Analysis', rightColumnX, yPosition);
           
-          // Analysis frame background
+          // Analysis frame background matching original image
           pdf.setFillColor(...colors.background);
-          pdf.roundedRect(rightColumnX - 2, yPosition + 2, imageWidth + 4, 60, 2, 2, 'F');
+          pdf.roundedRect(rightColumnX - 3, yPosition + 2, imageWidth + 6, imageHeight + 6, 3, 3, 'F');
           
           const overlayCanvas = await html2canvas(analysisCanvasRef.current, {
             backgroundColor: '#ffffff',
@@ -293,16 +293,15 @@ export async function generateInstallationPDF(
           });
           
           const overlayData = overlayCanvas.toDataURL('image/png');
-          const overlayHeight = (overlayCanvas.height / overlayCanvas.width) * imageWidth;
           
-          // Enhanced analysis border
+          // Consistent analysis border
           pdf.setDrawColor(...colors.border);
-          pdf.setLineWidth(1);
-          pdf.roundedRect(rightColumnX, yPosition + 5, imageWidth, overlayHeight, 2, 2, 'D');
-          pdf.addImage(overlayData, 'PNG', rightColumnX + 2, yPosition + 7, imageWidth - 4, overlayHeight - 4);
+          pdf.setLineWidth(1.5);
+          pdf.roundedRect(rightColumnX, yPosition + 5, imageWidth, imageHeight, 3, 3, 'D');
+          pdf.addImage(overlayData, 'PNG', rightColumnX + 2, yPosition + 7, imageWidth - 4, imageHeight - 4);
         }
         
-        yPosition += Math.max(imgHeight, 60) + 20;
+        yPosition += imageHeight + 25; // Consistent spacing after images
       } catch (error) {
         console.warn('Could not add images to PDF:', error);
         yPosition += 20;
@@ -504,10 +503,11 @@ export async function generateFaultDetectionPDF(
     yPosition = checkPageSpace(pdf, yPosition, 120);
     yPosition = addSectionHeader(pdf, 'VISUAL ANALYSIS', yPosition, colors.accent);
 
-    // Improved image layout with better spacing
-    const imageWidth = (pageWidth - 70) / 2;
+    // Fixed image layout with consistent sizing (matching installation PDF)
+    const imageWidth = 75; // Fixed width for consistent sizing
+    const imageHeight = 50; // Fixed height for consistent layout
     const leftColumnX = 30;
-    const rightColumnX = leftColumnX + imageWidth + 20;
+    const rightColumnX = pageWidth - imageWidth - 30; // Right-aligned for better balance
     
     if (imageUrl) {
       try {
@@ -516,9 +516,9 @@ export async function generateFaultDetectionPDF(
         pdf.setTextColor(...colors.text);
         pdf.text('Solar Panel System Image', leftColumnX, yPosition);
         
-        // Image frame background
+        // Enhanced image frame background (matching installation style)
         pdf.setFillColor(...colors.background);
-        pdf.roundedRect(leftColumnX - 2, yPosition + 2, imageWidth + 4, 60, 2, 2, 'F');
+        pdf.roundedRect(leftColumnX - 3, yPosition + 2, imageWidth + 6, imageHeight + 6, 3, 3, 'F');
         
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -535,13 +535,12 @@ export async function generateFaultDetectionPDF(
         ctx?.drawImage(img, 0, 0);
         
         const imgData = canvas.toDataURL('image/jpeg', 0.9);
-        const imgHeight = (img.height / img.width) * imageWidth;
         
-        // Enhanced image border with professional styling
+        // Professional image border with consistent sizing
         pdf.setDrawColor(...colors.border);
-        pdf.setLineWidth(1);
-        pdf.roundedRect(leftColumnX, yPosition + 5, imageWidth, imgHeight, 2, 2, 'D');
-        pdf.addImage(imgData, 'JPEG', leftColumnX + 2, yPosition + 7, imageWidth - 4, imgHeight - 4);
+        pdf.setLineWidth(1.5);
+        pdf.roundedRect(leftColumnX, yPosition + 5, imageWidth, imageHeight, 3, 3, 'D');
+        pdf.addImage(imgData, 'JPEG', leftColumnX + 2, yPosition + 7, imageWidth - 4, imageHeight - 4);
         
         if (analysisCanvasRef?.current) {
           pdf.text('Fault Detection Analysis', rightColumnX, yPosition);
@@ -555,18 +554,18 @@ export async function generateFaultDetectionPDF(
           const overlayData = overlayCanvas.toDataURL('image/png');
           const overlayHeight = (overlayCanvas.height / overlayCanvas.width) * imageWidth;
           
-          // Analysis frame background
+          // Analysis frame background matching original image
           pdf.setFillColor(...colors.background);
-          pdf.roundedRect(rightColumnX - 2, yPosition + 2, imageWidth + 4, 60, 2, 2, 'F');
+          pdf.roundedRect(rightColumnX - 3, yPosition + 2, imageWidth + 6, imageHeight + 6, 3, 3, 'F');
           
-          // Enhanced analysis border
+          // Consistent analysis border with fixed dimensions
           pdf.setDrawColor(...colors.border);
-          pdf.setLineWidth(1);
-          pdf.roundedRect(rightColumnX, yPosition + 5, imageWidth, overlayHeight, 2, 2, 'D');
-          pdf.addImage(overlayData, 'PNG', rightColumnX + 2, yPosition + 7, imageWidth - 4, overlayHeight - 4);
+          pdf.setLineWidth(1.5);
+          pdf.roundedRect(rightColumnX, yPosition + 5, imageWidth, imageHeight, 3, 3, 'D');
+          pdf.addImage(overlayData, 'PNG', rightColumnX + 2, yPosition + 7, imageWidth - 4, imageHeight - 4);
         }
         
-        yPosition += Math.max(imgHeight, 60) + 20;
+        yPosition += imageHeight + 25; // Consistent spacing after images
       } catch (error) {
         console.warn('Could not add images to PDF:', error);
         yPosition += 20;
