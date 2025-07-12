@@ -91,15 +91,15 @@ function addKeyValuePair(pdf: jsPDF, x: number, y: number, key: string, value: s
   pdf.setTextColor(...keyColor);
   pdf.text(`${key}:`, x, y);
   
-  // Value with proper text wrapping
+  // Value with proper text wrapping and spacing
   pdf.setFont('helvetica', 'bold');
   pdf.setTextColor(...valueColor);
   const pageWidth = pdf.internal.pageSize.getWidth();
-  const maxWidth = pageWidth - x - 60;
+  const maxWidth = pageWidth - x - 80; // More spacing to prevent overlap
   const valueLines = pdf.splitTextToSize(value, maxWidth);
-  pdf.text(valueLines, x + 55, y);
+  pdf.text(valueLines, x + 70, y); // More spacing between key and value
   
-  return y + Math.max(valueLines.length * 5, 8) + 2;
+  return y + Math.max(valueLines.length * 5, 10) + 3; // More line spacing
 }
 
 function checkPageSpace(pdf: jsPDF, currentY: number, neededSpace: number): number {
@@ -201,11 +201,11 @@ export async function generateInstallationPDF(
     yPosition = checkPageSpace(pdf, yPosition, 120);
     yPosition = addSectionHeader(pdf, 'VISUAL ANALYSIS', yPosition, colors.accent);
 
-    // Full-width image layout for better visibility
-    const imageWidth = 85; // Increased width for better display
-    const imageHeight = 64; // Increased height maintaining aspect ratio
+    // Properly sized image layout for consistent display
+    const imageWidth = 85; // Standard width for clear visibility
+    const imageHeight = 64; // Proportional height maintaining aspect ratio
     const leftColumnX = 15;
-    const rightColumnX = leftColumnX + imageWidth + 10; // Closer spacing for better fit
+    const rightColumnX = leftColumnX + imageWidth + 10; // Proper spacing between images
     
     // Original rooftop image
     if (imageUrl) {
@@ -271,11 +271,14 @@ export async function generateInstallationPDF(
     yPosition = checkPageSpace(pdf, yPosition, 100);
     yPosition = addSectionHeader(pdf, 'PERFORMANCE PROJECTIONS', yPosition, colors.secondary);
     
-    // Enhanced calculations with more realistic values
-    const monthlyProduction = (result.powerOutput * 120).toFixed(0); // More realistic calculation
-    const annualProduction = (result.powerOutput * 1450).toFixed(0); // Average annual hours
-    const co2Reduction = (parseFloat(annualProduction) * 0.0007).toFixed(1); // More accurate CO2 factor
-    const estimatedSavings = (parseFloat(annualProduction) * 8).toFixed(0); // Estimated annual savings in INR
+    // AI-based realistic calculations using actual panel data
+    const actualPanelWattage = 400; // Standard residential solar panel wattage
+    const systemWattage = result.totalPanels * actualPanelWattage;
+    const monthlyProduction = Math.round(systemWattage * 120 / 1000); // kWh per month
+    const annualProduction = Math.round(systemWattage * 1450 / 1000); // kWh per year
+    const co2Reduction = (annualProduction * 0.0007).toFixed(1); // CO2 reduction in tons
+    const indianElectricityRate = 8; // ₹8 per kWh average in India
+    const estimatedSavings = Math.round(annualProduction * indianElectricityRate);
     
     // Three-card layout with better spacing
     const perfCardWidth = 48;
@@ -283,10 +286,12 @@ export async function generateInstallationPDF(
     const perfSpacing = 8;
     const perfStartX = 25;
     
-    // Top row performance cards
-    addMetricCard(pdf, perfStartX, yPosition, perfCardWidth, perfCardHeight, 'Monthly Production', monthlyProduction, 'kWh', colors.primary);
-    addMetricCard(pdf, perfStartX + perfCardWidth + perfSpacing, yPosition, perfCardWidth, perfCardHeight, 'Annual Production', annualProduction, 'kWh/year', colors.secondary);
-    addMetricCard(pdf, perfStartX + 2*(perfCardWidth + perfSpacing), yPosition, perfCardWidth, perfCardHeight, 'Annual Savings', `₹${estimatedSavings}`, 'estimated', colors.success);
+    // Top row performance cards with AI-based calculations
+    addMetricCard(pdf, perfStartX, yPosition, perfCardWidth, perfCardHeight, 'Monthly Production', monthlyProduction.toString(), 'kWh', colors.primary);
+    addMetricCard(pdf, perfStartX + perfCardWidth + perfSpacing, yPosition, perfCardWidth, perfCardHeight, 'Annual Production', annualProduction.toString(), 'kWh/year', colors.secondary);
+    // Format annual savings with proper Indian number formatting
+    const formattedSavings = new Intl.NumberFormat('en-IN').format(estimatedSavings);
+    addMetricCard(pdf, perfStartX + 2*(perfCardWidth + perfSpacing), yPosition, perfCardWidth, perfCardHeight, 'Annual Savings', `₹${formattedSavings}`, 'estimated', colors.success);
     
     // Environmental impact card centered below
     const envCardY = yPosition + perfCardHeight + 10;
@@ -324,27 +329,19 @@ export async function generateInstallationPDF(
       });
     }
 
-    // Technical Specifications with improved layout
-    yPosition = checkPageSpace(pdf, yPosition, 80);
+    // Technical Specifications with proper spacing to prevent overlap
+    yPosition = checkPageSpace(pdf, yPosition, 100);
     yPosition = addSectionHeader(pdf, 'TECHNICAL SPECIFICATIONS', yPosition, colors.accent);
     
-    // Two-column technical layout
-    const techLeftCol = 30;
-    const techRightCol = pageWidth / 2 + 15;
-    let techLeftY = yPosition;
-    let techRightY = yPosition;
+    // Single column layout to prevent overlapping text
+    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Panel Type', 'Monocrystalline Silicon (400W each)');
+    yPosition = addKeyValuePair(pdf, 25, yPosition, 'System Efficiency', `${result.efficiency}% module efficiency`);
+    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Annual Production', `${annualProduction.toLocaleString('en-IN')} kWh/year`);
+    yPosition = addKeyValuePair(pdf, 25, yPosition, 'System Lifespan', '25+ years with manufacturer warranty');
+    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Payback Period', '6-8 years (estimated)');
+    yPosition = addKeyValuePair(pdf, 25, yPosition, 'Analysis Confidence', `${result.confidence}% accuracy`);
     
-    // Left column - System specifications
-    techLeftY = addKeyValuePair(pdf, techLeftCol, techLeftY, 'Panel Type', 'Monocrystalline Silicon (300W each)');
-    techLeftY = addKeyValuePair(pdf, techLeftCol, techLeftY, 'System Efficiency', `${result.efficiency}% module efficiency`);
-    techLeftY = addKeyValuePair(pdf, techLeftCol, techLeftY, 'System Lifespan', '25+ years with manufacturer warranty');
-    
-    // Right column - Performance data
-    techRightY = addKeyValuePair(pdf, techRightCol, techRightY, 'Annual Production', `${annualProduction} kWh/year`);
-    techRightY = addKeyValuePair(pdf, techRightCol, techRightY, 'Payback Period', '6-8 years (estimated)');
-    techRightY = addKeyValuePair(pdf, techRightCol, techRightY, 'Analysis Confidence', `${result.confidence}% accuracy`);
-    
-    yPosition = Math.max(techLeftY, techRightY) + 20;
+    yPosition += 15;
     
     // Simple footer
     const footerY = pageHeight - 20;
