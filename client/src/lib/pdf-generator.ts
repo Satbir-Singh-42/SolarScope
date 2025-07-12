@@ -273,7 +273,7 @@ export async function generateInstallationPDF(
     const monthlyProduction = (result.powerOutput * 120).toFixed(0); // More realistic calculation
     const annualProduction = (result.powerOutput * 1450).toFixed(0); // Average annual hours
     const co2Reduction = (parseFloat(annualProduction) * 0.0007).toFixed(1); // More accurate CO2 factor
-    const estimatedSavings = (parseFloat(annualProduction) * 0.12).toFixed(0); // Estimated annual savings
+    const estimatedSavings = (parseFloat(annualProduction) * 8).toFixed(0); // Estimated annual savings in INR
     
     // Three-card layout with better spacing
     const perfCardWidth = 48;
@@ -284,7 +284,7 @@ export async function generateInstallationPDF(
     // Top row performance cards
     addMetricCard(pdf, perfStartX, yPosition, perfCardWidth, perfCardHeight, 'Monthly Production', monthlyProduction, 'kWh', colors.primary);
     addMetricCard(pdf, perfStartX + perfCardWidth + perfSpacing, yPosition, perfCardWidth, perfCardHeight, 'Annual Production', annualProduction, 'kWh/year', colors.secondary);
-    addMetricCard(pdf, perfStartX + 2*(perfCardWidth + perfSpacing), yPosition, perfCardWidth, perfCardHeight, 'Annual Savings', `$${estimatedSavings}`, 'estimated', colors.success);
+    addMetricCard(pdf, perfStartX + 2*(perfCardWidth + perfSpacing), yPosition, perfCardWidth, perfCardHeight, 'Annual Savings', `₹${estimatedSavings}`, 'estimated', colors.success);
     
     // Environmental impact card centered below
     const envCardY = yPosition + perfCardHeight + 10;
